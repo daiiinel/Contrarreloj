@@ -1,0 +1,10 @@
+# Archivos de entorno y usuario
+*.layout
+*.depend
+
+# Carpetas de compilacion (objetos y binarios)
+bin/
+obj/
+
+# Archivos de salida/generados por el programa
+puerto.txt

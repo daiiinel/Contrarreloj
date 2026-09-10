@@ -3,9 +3,18 @@
 //propuesta/pseudocodigo
 int nuevaJornada(const char* nomOperador)
 {
-    //generarPuerto();
+    //estructura que contiene datos de puerto.txt y config.txt
+    tParametros param;
+
+    if(generarPuerto(&param)!=TODO_OK)
+        return NO_SIMULABLE;
+    ///param no trae cantidad de contenedores
+    //por ahora esa cantidad se determina como cantCont= param->maxCamiones, pq hay un solo cont por camion¿
+
 
     //cargarOperador(nomOperador); //funcion ajena de operadores.h
+
+
 
     //inicializar reloj(t=0), zonas, buques, camiones_en_espera, etc
     //lista de mov

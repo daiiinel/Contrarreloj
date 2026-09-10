@@ -2,7 +2,7 @@
 #define JORNADA_H_INCLUDED
 
 #include "constantes.h"
-
+#include "archivos.h"
 
 
 int nuevaJornada(const char* nomOperador); //propuesta por ahora

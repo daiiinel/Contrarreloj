@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "jornada.h"
 
@@ -7,6 +5,8 @@ int main()
 {
     int opc;
     char nombreOperador[MAX_NOMBRE_OP];
+
+    srand(time(NULL));
 
     do
     {

@@ -9,6 +9,7 @@ typedef struct
     char nom[3];
     bool estado; /// 0 libre ; 1 ocupado
 }tMuelle;
+// un vector de muelles
 
 typedef struct jornada
 {
@@ -25,6 +26,19 @@ typedef struct
     bool atendido;
     //tContenedor pedido;
 }tCamiones;
+// cola
+
+typedef struct
+{
+    char nom[];
+    unsigned capacidad;
+}tZona;
+
+typedef struct
+{
+
+}
+
 // bajo los camiones yo, de puerto.txt que dai trae generado
 // hago una cola de camiones
 /*
@@ -62,7 +76,7 @@ typedef struct
     int tiempo;
     /// paso la estructura de los muelles
     /// de los contenedores
-    /// 
+    ///
 }tJornada;
 
 /// para ver el primer u segundo camion bajamos el primero a camionActual y solo vemos el camion primero

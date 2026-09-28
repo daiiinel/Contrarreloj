@@ -1,7 +1,7 @@
 #ifndef NODO_H_INCLUDED
 #define NODO_H_INCLUDED
 
-//nodo genérico para utilizar la redefinicion en pilas,colas y listas dinámicas
+//nodo genï¿½rico para utilizar la redefinicion en pilas,colas y listas dinï¿½micas
 typedef struct sNodo
 {
     void* info;

@@ -1,6 +1,6 @@
 #include "comandos.h"
 
-//propuesta
+//propuestaPEDROOOOOOOOOOOOOOOOOOOOOO
 /*
 int pedirYEjecutarComando( )
 {
@@ -16,3 +16,8 @@ int pedirYEjecutarComando( )
     return TODO_OK;
 }
 */
+
+int ingresarValidar ()
+{
+    return TODO_OK;
+}

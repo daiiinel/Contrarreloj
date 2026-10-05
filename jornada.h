@@ -30,14 +30,11 @@ typedef struct
 
 typedef struct
 {
-    char nom[];
+    char nom[3];
     unsigned capacidad;
 }tZona;
 
-typedef struct
-{
 
-}
 
 // bajo los camiones yo, de puerto.txt que dai trae generado
 // hago una cola de camiones

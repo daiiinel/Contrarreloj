@@ -7,22 +7,23 @@ int nuevaJornada(const char* nomOperador)
     //estructura que contiene datos de puerto.txt y config.txt
     //
     tParametros param;
-    tMuelle muelles, aux;
+    tCola cMuelles;
+    tMuelle aux;
     tCamiones camiones;
     tBuque buque;
     char op[4];
     unsigned i=1, tiempo=0, tiempoAConsumir;
 
-    if(generarPuerto(&param)!=TODO_OK)
+    if(validaConfigYGeneraPuerto(&param)!=TODO_OK)
         return NO_SIMULABLE;
 
-    crearCola(&muelles);
+    crearCola(&cMuelles);
 
     while(i< param.cantMuelle + 1)
     {
         sprintf(aux.nom,"M%d",i);
         aux.estado=0;
-        ponerEnCola(&muelles, &aux,sizeof(tMuelle));
+        ponerEnCola(&cMuelles, &aux,sizeof(tMuelle));
         i++;
     }
 
@@ -45,7 +46,7 @@ int nuevaJornada(const char* nomOperador)
         ///se hace todo
 
         printf("accion pibe: ");
-        scanf("%s", &op);
+        //scanf("%s", &op);
         // validar accion validarAccion()
         // tiempoAConsumir  = llamo a tu funcion te paso el tiempo,la accion?
         // vos me lo traes sumado tiempo=2
@@ -55,7 +56,7 @@ int nuevaJornada(const char* nomOperador)
         // antes de hacer la accion, preguntamos si llega algo durante la accion realizandose,
         // sisi, avanzamos hasta el arrivo y lo hacemos y despues terminamos la accion
 
-        if(tiempo + tiempoAConsumir > camiones.tiempoLlegada))
+        if(tiempo + tiempoAConsumir > camiones.tiempoLlegada)
         {
 
         }

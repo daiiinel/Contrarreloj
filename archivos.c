@@ -8,7 +8,7 @@
 
 
 ///MEJORABLE/OPTIMIZABLE - version q funciona¿
-///optimizable-> asegurar q hayan mas casos en los que los seteos no sean tan chicos
+///optimizable-> asegurar q hayan mas casos en los que los seteos no sean tan chicos (check?¿)
 //ej: 1contxbuq, 1 buque, 1 camion -> 100% valido y simulable pero muy facil¿¿
 int validaConfigYGeneraPuerto(tParametros * param)
 {
@@ -59,8 +59,8 @@ int generarPuertoTxT(tParametros* param)
     if(!pPuerto)
         return ERROR_ARCH;
 
-    cantBuques = rand() % param->maxBuques + 1;
-    contXBuq = rand() % param->maxContPorBuques + 1;
+    cantBuques = randAlterado(param->maxBuques);
+    contXBuq = randAlterado(param->maxContPorBuques);
     cantContenedores = cantBuques * contXBuq;
 
     //nunca pedir mas camiones q contenedores disponibles
@@ -138,3 +138,14 @@ void cargarParametros(tParametros* param, FILE*pConf)
             &param->tiempoReubicacion,
             &param->tiempoCargaCamion);
 }
+
+//fx aux q obtiene el maximo entre dos randoms
+//(baja la probabilidad de tener simulaciones con valores menores)
+int randAlterado(int maximo)
+{
+    int rand1=rand()%maximo+1;
+    int rand2=rand()%maximo+1;
+
+    return (rand1>rand2) ? rand1:rand2;
+}
+

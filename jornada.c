@@ -41,6 +41,7 @@ int nuevaJornada(const char* nomOperador)
     //lista de mov
     //procesar lo q suceda cuando t=0
 
+    tiempo=param.minJornada; //pa evitar el bucle¿
     while(tiempo < param.minJornada)
     {
         ///se hace todo

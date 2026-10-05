@@ -49,7 +49,12 @@ int main()
                 printf("Ingrese su nombre: ");
                 fflush(stdin);
                 gets(nombreOperador);
-                nuevaJornada(nombreOperador);
+                if(nuevaJornada(nombreOperador)==NO_SIMULABLE)
+                {
+                    puts(MSG_NO_SIMULABLE);
+                    return NO_SIMULABLE;
+                }
+
                 break;
             case 2:
                 //verRanking(); //--prox en operadores.h (persistencia de datos)

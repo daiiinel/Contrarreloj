@@ -24,6 +24,7 @@ typedef struct
 int validaConfigYGeneraPuerto(tParametros*param);
 int generarPuertoTxT(tParametros*param);
 void cargarParametros(tParametros* param, FILE*pConf);
+int randAlterado(int maximo);
 
 
 #endif // ARCHIVOS_H_INCLUDED

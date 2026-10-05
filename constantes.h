@@ -18,6 +18,10 @@
                     "\t 3- Salir \n" \
                     "\t Opcion--> "
 
+#define MSG_NO_SIMULABLE "\n\t --- Simulacion fallida --- \n "\
+                         "\t Verifique que el archivo config.txt \n"\
+                         "\t tenga valores simulables y reintente\n"
+
 //salidas
 #define TODO_OK             0
 #define ERROR_COMANDO       1

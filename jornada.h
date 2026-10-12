@@ -32,7 +32,7 @@ typedef struct
 
 typedef struct
 {
-    char nom[5];
+    char nom[3];
     unsigned capacidad;
 }tZona;
 

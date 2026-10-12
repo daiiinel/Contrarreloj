@@ -31,6 +31,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="TDA/colaDinamica.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TDA/colaDinamica.h" />
 		<Unit filename="TDA/nodo.h" />
 		<Unit filename="TDA/pila_dinamica.c">
 			<Option compilerVar="CC" />

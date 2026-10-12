@@ -3,87 +3,113 @@
 #define ID_CONT    100 //identificador predeterminado para los contenedores [C101, C102, etc]
 
 ///lee config.txt y generar puerto.txt -listo
-///validar que sea "simulable" - "listo" a medias
-///determinar buques, zonas, camiones, tiempo - falta
+///validar que sea "simulable" - listo
+///determinar buques, zonas, camiones, tiempo - list
 
 
-///MEJORABLE - version temprana q funciona con parametros muy basicos
-///mas adelante la optimizo con casos bordes y etc
-int generarPuerto(tParametros * param)
+///MEJORABLE/OPTIMIZABLE - version q funciona¿
+///optimizable-> asegurar q hayan mas casos en los que los seteos no sean tan chicos (check?¿)
+//ej: 1contxbuq, 1 buque, 1 camion -> 100% valido y simulable pero muy facil¿¿
+int validaConfigYGeneraPuerto(tParametros * param)
 {
     FILE* pConf= fopen(CONF_ARCH, "rt");
-    FILE*pPuerto= fopen(PUERTO_ARCH, "wt");
 
-    int i, j, idC=ID_CONT, tiempoSobra;
-
-    if(!pConf || !pPuerto)
-    {
-        if(pConf) fclose(pConf);
-        if(pPuerto) fclose(pPuerto);
-
+    if(!pConf)
         return ERROR_ARCH;
-    }
 
     cargarParametros(param, pConf);
 
-    int cantCont= param->maxCamiones;
-
-    //validar q haya el tiempo posible [[por ahora]]
-    tiempoSobra=param->minJornada - cantCont * param->tiempoDescargaCont
-                    - param->tiempoCargaCamion * param->maxCamiones - param->tiempoReubicacion* cantCont;
-
-    if(tiempoSobra<0)
+    //casos insimulabless
+    if(param->maxCamiones > param->maxBuques * param->maxContPorBuques)
         return NO_SIMULABLE;
 
+    if(param->maxBuques > 0 && param->cantMuelle==0)
+        return NO_SIMULABLE;//-- buques en cola infinitamente
 
-    //seteos iniciales
+    if(param->cantZona==0 || param->capPila==0)
+        return NO_SIMULABLE; //sin esp para el comando DES
+
+    if(param->tiempoDescargaCont + param->tiempoCargaCamion > param->minJornada)
+        return NO_SIMULABLE;
+
+    if(param->maxContPorBuques > param->cantZona * param->capPila)
+        return NO_SIMULABLE;
+
+    generarPuertoTxT(param);
+
+    fclose(pConf);
+    return TODO_OK;
+}
+
+int generarPuertoTxT(tParametros* param)
+{
+    //para iteraciones en ciclos
+    int i, j, idC = ID_CONT, idAsignado=0;
+    //seteos de parametrs (cantidades)
+    int cantBuques, contXBuq, cantContenedores, cantCamiones;
+    //acumuladores de tiempo para q se genere en orden temporal¿
+    int tiempoBuque=0, tiempoCamion = 0;
+
+    int limSeguro;
+
+    tCola bancoContenedores;
+
+    FILE* pPuerto = fopen(PUERTO_ARCH, "wt");
+
+    if(!pPuerto)
+        return ERROR_ARCH;
+
+    cantBuques = randAlterado(param->maxBuques);
+    contXBuq = randAlterado(param->maxContPorBuques);
+    cantContenedores = cantBuques * contXBuq;
+
+    //nunca pedir mas camiones q contenedores disponibles
+    cantCamiones = MIN(param->maxCamiones, cantContenedores);
+
+    //al tiempo total, le restamos el ultimo intervalo de tiempo posible para una accion
+    //(carga y descarga), para q no llegue un buque en t=29 cuando el tiempo total es 30 por ej
+    limSeguro= param->minJornada -(param->tiempoDescargaCont +param->tiempoCargaCamion);
+
+    crearCola(&bancoContenedores);
+
     fprintf(pPuerto,
             "JORNADA:%d\nMUELLES:%d\nZONAS:%d\nCAPACIDAD_PILA:%d\n",
             param->minJornada, param->cantMuelle, param->cantZona, param->capPila);
 
     fprintf(pPuerto, "\n[BUQUES]\n");
 
-    for(i=0;i<param->maxBuques;i++)
+    for(i = 0; i <cantBuques; i++)
     {
-        fprintf(pPuerto, "B%03d;T=%d;", i+1, i);
+        //reparte llegadas de buques
+        tiempoBuque+= rand()%(limSeguro/cantBuques+1);
+        fprintf(pPuerto, "B%03d;T=%d;", i+1, tiempoBuque);
 
-        for(j=0;j<=cantCont/2;j++)
+        for(j=0; j<contXBuq; j++)
         {
-            fprintf(pPuerto, "C=C%3d", idC+j+1);
+            int idNuevo = idC + j + 1;
+            ponerEnCola(&bancoContenedores, &idNuevo, sizeof(int));
 
-            if(j!=cantCont/2)
+            fprintf(pPuerto, "C=C%03d", idNuevo);
+
+            if(j!= contXBuq-1)
                 fprintf(pPuerto, ",");
         }
-        idC+=ID_CONT;
-        cantCont= cantCont/2 + cantCont%2;
+        idC += ID_CONT;
         fprintf(pPuerto, "\n");
     }
 
     fprintf(pPuerto, "\n[CAMIONES]\n");
 
-    //reinicio de variables
-    cantCont= param->maxCamiones;
-    idC=ID_CONT;
-    j=1;
-    for(i=0;i<param->maxCamiones;i++)
+    for(i=0; i<cantCamiones; i++)
     {
-        fprintf(pPuerto,"K%03d;T=%d;", i+1, rand()% param->minJornada+ 1);
+        //saltos de tiempo para q queden encolados en orden
+        tiempoCamion+= rand()%(param->minJornada/cantCamiones +1);
 
-        fprintf(pPuerto, "C=C%03d", idC+j);
-
-        if(i==cantCont/2)
-        {
-            idC+=ID_CONT;
-            cantCont= cantCont/2 + cantCont%2;
-            j=1;
-        }
-        else
-            j++;
-        fprintf(pPuerto, "\n");
+        sacarDeCola(&bancoContenedores, &idAsignado, sizeof(int));
+        fprintf(pPuerto,"K%03d;T=%d;C=C%03d\n", i+1, tiempoCamion, idAsignado);
     }
 
-
-    fclose(pConf);
+    vaciarCola(&bancoContenedores);
     fclose(pPuerto);
     return TODO_OK;
 }
@@ -91,16 +117,16 @@ int generarPuerto(tParametros * param)
 void cargarParametros(tParametros* param, FILE*pConf)
 {
     fscanf(pConf,
-           "duracion_jornada_minutos: %d\n\
-            cantidad_muelles: %d\n\
-            cantidad_zonas_almacenamiento: %d\n\
-            capacidad_pila: %d\n\
-            maximo_buques: %d\n\
-            maximo_contenedores_por_buque: %d\n\
-            maximo_camiones: %d\n\
-            tiempo_descarga_contenedor: %d\n\
-            tiempo_reubicacion_contenedor: %d\n\
-            tiempo_carga_camion: %d\n",
+           "%*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n\
+            %*[^:]: %d\n",
             &param->minJornada,
             &param->cantMuelle,
             &param->cantZona,
@@ -112,3 +138,14 @@ void cargarParametros(tParametros* param, FILE*pConf)
             &param->tiempoReubicacion,
             &param->tiempoCargaCamion);
 }
+
+//fx aux q obtiene el maximo entre dos randoms
+//(baja la probabilidad de tener simulaciones con valores menores)
+int randAlterado(int maximo)
+{
+    int rand1=rand()%maximo+1;
+    int rand2=rand()%maximo+1;
+
+    return (rand1>rand2) ? rand1:rand2;
+}
+

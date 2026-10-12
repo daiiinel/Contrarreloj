@@ -7,6 +7,7 @@
 typedef struct
 {
     char nom[3];
+    tBuque* buque;
     bool estado; /// 0 libre ; 1 ocupado
 }tMuelle;
 // un vector de muelles
@@ -15,7 +16,8 @@ typedef struct jornada
 {
     char nomBuque[5];
     unsigned tiempoLlegada;
-    //una cola de contenedores?
+    tPila* contenedores
+    //una pila de contenedores?
 }tBuque;
 
 typedef struct
@@ -33,7 +35,6 @@ typedef struct
     char nom[3];
     unsigned capacidad;
 }tZona;
-
 
 
 // bajo los camiones yo, de puerto.txt que dai trae generado

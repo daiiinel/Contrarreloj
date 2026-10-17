@@ -7,7 +7,8 @@ int nuevaJornada(const char* nomOperador)
     //estructura que contiene datos de puerto.txt y config.txt
     //
     tParametros param;
-    tMuelle muelles, aux;
+    tCola cMuelles;
+    tMuelle aux;
     tCamiones camiones;
     tBuque buque;
     tComando op;
@@ -17,16 +18,16 @@ int nuevaJornada(const char* nomOperador)
 
     unsigned i=1, tiempo=0, tiempoAConsumir;
 
-    if(generarPuerto(&param)!=TODO_OK)
+    if(validaConfigYGeneraPuerto(&param)!=TODO_OK)
         return NO_SIMULABLE;
 
-    crearCola(&muelles);
+    crearCola(&cMuelles);
 
     while(i< param.cantMuelle + 1)
     {
         sprintf(aux.nom,"M%d",i);
         aux.estado=0;
-        ponerEnCola(&muelles, &aux,sizeof(tMuelle));
+        ponerEnCola(&cMuelles, &aux,sizeof(tMuelle));
         i++;
     }
 
@@ -48,15 +49,13 @@ int nuevaJornada(const char* nomOperador)
     //lista de mov
     //procesar lo q suceda cuando t=0
 
+    tiempo=param.minJornada; //pa evitar el bucle¿
     while(tiempo < param.minJornada)
     {
         ///se hace todo
 
-        if(op= ingresarValidar())
-            // si se puede hacer,
-            // si no se puede hacer devolveme un "nop"
-
-
+        printf("accion pibe: ");
+        //scanf("%s", &op);
         // validar accion validarAccion()
         // tiempoAConsumir  = llamo a tu funcion te paso el tiempo,la accion?
         // vos me lo traes sumado tiempo=2
@@ -66,9 +65,7 @@ int nuevaJornada(const char* nomOperador)
         // antes de hacer la accion, preguntamos si llega algo durante la accion realizandose,
         // sisi, avanzamos hasta el arrivo y lo hacemos y despues terminamos la accion
 
-        // hay un bloque?
-
-        if(tiempo + tiempoAConsumir > camiones.tiempoLlegada))
+        if(tiempo + tiempoAConsumir > camiones.tiempoLlegada)
         {
 
         }

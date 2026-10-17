@@ -56,6 +56,7 @@ int sacarDeCola(tCola* pc, void* dato, unsigned tamDato)
     if(pc->pri==NULL)
         return COLA_VACIA;
 
+    pc->pri=aux->sig;
     memcpy(dato,aux->info,MIN(aux->tam,tamDato));
     free(aux->info);
     free(aux);

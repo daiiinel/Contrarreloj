@@ -2,6 +2,7 @@
 #define ARCHIVOS_H_INCLUDED
 
 #include "constantes.h"
+#include "TDA/colaDinamica.h"
 
 //propuesta
 
@@ -20,8 +21,10 @@ typedef struct
 }tParametros;
 
 
-int generarPuerto(tParametros*param);
+int validaConfigYGeneraPuerto(tParametros*param);
+int generarPuertoTxT(tParametros*param);
 void cargarParametros(tParametros* param, FILE*pConf);
+int randAlterado(int maximo);
 
 
 #endif // ARCHIVOS_H_INCLUDED

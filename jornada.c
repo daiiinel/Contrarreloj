@@ -10,7 +10,11 @@ int nuevaJornada(const char* nomOperador)
     tMuelle muelles, aux;
     tCamiones camiones;
     tBuque buque;
-    char op[4];
+    tComando op;
+
+
+
+
     unsigned i=1, tiempo=0, tiempoAConsumir;
 
     if(generarPuerto(&param)!=TODO_OK)
@@ -35,6 +39,10 @@ int nuevaJornada(const char* nomOperador)
     //cargarOperador(nomOperador); //funcion ajena de operadores.h
 
 
+// una cola auzliar donde pongo todos los que buques que van a llegar
+// cuando sea el tiempo de llegada
+// lo desencolo de la auxiliar y lo encolo en la cola POSTA de espera para un muelle libre
+
 
     //inicializar reloj(t=0), zonas, buques, camiones_en_espera, etc
     //lista de mov
@@ -44,8 +52,11 @@ int nuevaJornada(const char* nomOperador)
     {
         ///se hace todo
 
-        printf("accion pibe: ");
-        scanf("%s", &op);
+        if(op= ingresarValidar())
+            // si se puede hacer,
+            // si no se puede hacer devolveme un "nop"
+
+
         // validar accion validarAccion()
         // tiempoAConsumir  = llamo a tu funcion te paso el tiempo,la accion?
         // vos me lo traes sumado tiempo=2
@@ -54,6 +65,8 @@ int nuevaJornada(const char* nomOperador)
         // Hacer la accion
         // antes de hacer la accion, preguntamos si llega algo durante la accion realizandose,
         // sisi, avanzamos hasta el arrivo y lo hacemos y despues terminamos la accion
+
+        // hay un bloque?
 
         if(tiempo + tiempoAConsumir > camiones.tiempoLlegada))
         {
@@ -79,4 +92,9 @@ int nuevaJornada(const char* nomOperador)
     //actOperador(&operador); //funcion ajena, mandariamos a operadores.c
 
     return TODO_OK;
+}
+
+int procesararrivo()
+{
+
 }

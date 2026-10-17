@@ -23,8 +23,6 @@ verNPrimeros(tCola *pc, unsigned n) una copia de la cola
 
 */
 
-
-
 int main()
 {
     int opc;

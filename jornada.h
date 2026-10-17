@@ -79,6 +79,14 @@ typedef struct
     ///
 }tJornada;
 
+typedef struct
+{
+    char nomre[4];
+    unsigned tiempoAConsumir;
+    char org[3];
+    char des[3];
+}tComando;
+
 /// para ver el primer u segundo camion bajamos el primero a camionActual y solo vemos el camion primero
 
 

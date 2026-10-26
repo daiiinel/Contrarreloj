@@ -8,10 +8,7 @@
 #define FACTOR_OCUP 0.25
 #define FACTOR_DECR 0.50
 
-#define TODO_OK 0
-#define DUPLICADO 1
 #define POS_INV 2
-#define SIN_MEM 3
 #define ERR_ARCH 4
 #define ERR_VEC 5
 

@@ -1,83 +1,71 @@
 #include "jornada.h"
 #include "TDA/colaDinamica.h"
+#include "TDA/ListaDinamica.h"
 
 //propuesta/pseudocodigo
-int nuevaJornada(const char* nomOperador)
+int nuevaJornada(const char* nomOperador, tJornada jor)
 {
     //estructura que contiene datos de puerto.txt y config.txt
-    //
     tParametros param;
-    tCola cMuelles;
-    tMuelle aux;
-    tCamiones camiones;
-    tBuque buque;
-    tComando op;
 
+    tCola cMuelles,
+          cCamiones;
 
+    tMuelle auxMuelle;
 
+    tZona auxZona;
+    tLista lZonas;
+    void* contenedor;
 
-    unsigned i=1, tiempo=0, tiempoAConsumir;
+    unsigned i=1;
 
     if(validaConfigYGeneraPuerto(&param)!=TODO_OK)
         return NO_SIMULABLE;
 
+    ///Muelles
     crearCola(&cMuelles);
 
     while(i< param.cantMuelle + 1)
     {
-        sprintf(aux.nom,"M%d",i);
-        aux.estado=0;
-        ponerEnCola(&cMuelles, &aux,sizeof(tMuelle));
+        sprintf(auxMuelle.nom,"M%d",i);
+        auxMuelle.estado=0;
+        if(ponerEnCola(&cMuelles, &auxMuelle,sizeof(tMuelle))!= TODO_OK)
+            return NO_SIMULABLE;
         i++;
     }
 
-    //para camiones
-    //para las zonas (al principio vacias)
+    ///Camiones
+    crearCola(&cCamiones);
 
-    ///param no trae cantidad de contenedores
-    //por ahora esa cantidad se determina como cantCont= param->maxCamiones, pq hay un solo cont por camion�
+    ///Zonas
+    tListaCrear(&lZonas);
+    i=1;// lo vuelvo a setear
+    while(i < param.cantZona)
+    {
+        sprintf(auxZona.nom, "Z%d", i);
+        auxZona.capacidad=param.capPila;
+        crearPila(&auxZona.contenedores);
+        if(tListaInsertarAlFinal(&lZonas,&auxZona,sizeof(tZona))!= TODO_OK)
+            return NO_SIMULABLE;
+        i++;
+    }
 
-    //cargarOperador(nomOperador); //funcion ajena de operadores.h
+    ///Jornada
+    strcpy(jor.operador, nomOperador);
+    jor.tiempo=0;
+    jor.tiempo_maximo= param.minJornada;
+    jor.puntaje=0;
+    jor.cMuelles= cMuelles;
+    jor.cCamiones= cCamiones;
+    jor.lZonas= lZonas;
 
-
-// una cola auzliar donde pongo todos los que buques que van a llegar
-// cuando sea el tiempo de llegada
-// lo desencolo de la auxiliar y lo encolo en la cola POSTA de espera para un muelle libre
+    // una cola auzliar donde pongo todos los que buques que van a llegar
+    // cuando sea el tiempo de llegada
+    // lo desencolo de la auxiliar y lo encolo en la cola POSTA de espera para un muelle libre
 
 
     //inicializar reloj(t=0), zonas, buques, camiones_en_espera, etc
     //lista de mov
-    //procesar lo q suceda cuando t=0
-
-    tiempo=param.minJornada; //pa evitar el bucle¿
-    while(tiempo < param.minJornada)
-    {
-        ///se hace todo
-
-        printf("accion pibe: ");
-        //scanf("%s", &op);
-        // validar accion validarAccion()
-        // tiempoAConsumir  = llamo a tu funcion te paso el tiempo,la accion?
-        // vos me lo traes sumado tiempo=2
-        // hay arrivos dentro de ese tiempo?
-        // ecolo,apilo, enlisto, lo que llegue
-        // Hacer la accion
-        // antes de hacer la accion, preguntamos si llega algo durante la accion realizandose,
-        // sisi, avanzamos hasta el arrivo y lo hacemos y despues terminamos la accion
-
-        if(tiempo + tiempoAConsumir > camiones.tiempoLlegada)
-        {
-
-        }
-        // t= 2
-        // arrivo en el t=4
-        // t=4 hacemos la llegada, avanzamos hasta el tiempo a consumir
-        // t= 7
-
-
-
-        // sumo el tiempo + tiempoAConsumir
-    }
 
     //while t<puerto.durMax y no haya bloqueo y no haya terminado todos los procesos pendientes
         /*if pedirYEjecutarComando(parametros_necesarios) != TODO_OK
@@ -91,7 +79,8 @@ int nuevaJornada(const char* nomOperador)
     return TODO_OK;
 }
 
-int procesararrivo()
+int procesarArrivo()
 {
 
+    return TODO_OK;
 }

@@ -3,6 +3,15 @@
 
 #include "constantes.h"
 #include "archivos.h"
+#include "TDA/pila_dinamica.h"
+#include "TDA/ListaDinamica.h"
+
+typedef struct jornada
+{
+    char nomBuque[5];
+    unsigned tiempoLlegada;
+    tPila* contenedores;
+}tBuque;
 
 typedef struct
 {
@@ -10,15 +19,6 @@ typedef struct
     tBuque* buque;
     bool estado; /// 0 libre ; 1 ocupado
 }tMuelle;
-// un vector de muelles
-
-typedef struct jornada
-{
-    char nomBuque[5];
-    unsigned tiempoLlegada;
-    tPila* contenedores
-    //una pila de contenedores?
-}tBuque;
 
 typedef struct
 {
@@ -26,32 +26,19 @@ typedef struct
     unsigned tiempoLlegada;
     char pedido[5];// una estructura de contenedor??
     bool atendido;
-    //tContenedor pedido;
 }tCamiones;
-// cola
-
+//los camiones vienen en cola
 typedef struct
 {
     char nom[3];
     unsigned capacidad;
+    tPila contenedores;
 }tZona;
 
 
 // bajo los camiones yo, de puerto.txt que dai trae generado
 // hago una cola de camiones
-/*
 
-por ahora solo hay un id?
-typedef struct
-{
-    char id[5];
-}tContenedor;
-
-*/
-
-
-
-//Para la "gestion de datos"?
 //Uno para el archivo de operadores y el otro para el archivo de jornadas
 typedef struct
 {
@@ -68,13 +55,15 @@ typedef struct
              movimientosRealizados;
 }tEstadisticaJornada;
 
-//se lo paso a pedro
 typedef struct
 {
+    char* operador;
     int tiempo;
-    /// paso la estructura de los muelles
-    /// de los contenedores
-    ///
+    int tiempo_maximo;
+    unsigned puntaje;
+    tCola cMuelles;
+    tCola cCamiones;
+    tLista lZonas;
 }tJornada;
 
 typedef struct
@@ -85,12 +74,8 @@ typedef struct
     char des[3];
 }tComando;
 
-/// para ver el primer u segundo camion bajamos el primero a camionActual y solo vemos el camion primero
-
-
-
 // habria que pasar, camiones, muelles,
-int nuevaJornada(const char* nomOperador); //propuesta por ahora
-
+int nuevaJornada(const char* nomOperador, tJornada jor); 
+int procesarArrivo();
 
 #endif // JORNADA_H_INCLUDED

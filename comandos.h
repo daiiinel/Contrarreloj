@@ -5,6 +5,7 @@
 #include "TDA/colaDinamica.h"
 #include "TDA/pila_dinamica.h"
 #include "TDA/ListaDinamica.h"
+#include "jornada.h"
 #include "archivos.h"
 #include "jornada.h"
 #include "TDA/Vector.h"
@@ -16,8 +17,9 @@
 #define REU 8
 #define VER 9
 #define ESP 10
+#define NO_VALIDA -1
 
-typedef struct 
+typedef struct
 {
     int codOperacion;
     char argumento1[TAM_ARGUMENTO];

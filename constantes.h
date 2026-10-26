@@ -21,6 +21,7 @@
 #define MSG_NO_SIMULABLE "\n\t --- Simulacion fallida --- \n "\
                          "\t Verifique que el archivo config.txt \n"\
                          "\t tenga valores simulables y reintente\n"
+#define base "%d"
 
 //salidas
 #define TODO_OK             0
@@ -28,6 +29,7 @@
 #define ERROR_ARCH          2
 #define NO_SIMULABLE        3
 #define SIN_MEM             -1
+#define DUPLICADO           5
 
 //cadenas
 #define MAX_NOMBRE_OP       50

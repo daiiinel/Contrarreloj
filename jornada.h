@@ -25,7 +25,7 @@ typedef struct
     char num[3];
     unsigned tiempoLlegada;
     char pedido[5];// una estructura de contenedor??
-    bool atendido;
+    bool atendido; // 0 no atendido ;   1 atendido
 }tCamiones;
 //los camiones vienen en cola
 typedef struct
@@ -57,11 +57,12 @@ typedef struct
 
 typedef struct
 {
-    char* operador;
+    char operador[MAX_NOMBRE_OP];
     int tiempo;
     int tiempo_maximo;
-    unsigned puntaje;
+    int puntaje;
     tLista lMuelles;
+    tCola cBuques;
     tCola cCamiones;
     tLista lZonas;
 }tJornada;

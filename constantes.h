@@ -21,7 +21,6 @@
 #define MSG_NO_SIMULABLE "\n\t --- Simulacion fallida --- \n "\
                          "\t Verifique que el archivo config.txt \n"\
                          "\t tenga valores simulables y reintente\n"
-#define base "%d"
 
 //salidas
 #define TODO_OK             0

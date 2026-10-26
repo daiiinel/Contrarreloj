@@ -2,12 +2,14 @@
 #include "TDA/colaDinamica.h"
 #include "TDA/ListaDinamica.h"
 
+#include "archivos.h"
+
 //propuesta/pseudocodigo
 int nuevaJornada(const char* nomOperador, tJornada jor)
 {
     //estructura que contiene datos de puerto.txt y config.txt
     tParametros param;
-    
+
     tLista lMuelles;
     tCola cCamiones;
 
@@ -32,7 +34,7 @@ int nuevaJornada(const char* nomOperador, tJornada jor)
             return NO_SIMULABLE;
         i++;
     }
-
+  
     ///Camiones
     crearCola(&cCamiones);
 
@@ -48,7 +50,8 @@ int nuevaJornada(const char* nomOperador, tJornada jor)
              return NO_SIMULABLE;
         i++;
     }
-    ///Jornada
+
+    //Jornada
     strcpy(jor.operador, nomOperador);
     jor.tiempo=0;
     jor.tiempo_maximo= param.minJornada;
@@ -57,6 +60,8 @@ int nuevaJornada(const char* nomOperador, tJornada jor)
     jor.cCamiones= cCamiones;
     jor.lZonas= lZonas;
 
+
+//    bajarPuertotxt(jor);
     // una cola auzliar donde pongo todos los que buques que van a llegar
     // cuando sea el tiempo de llegada
     // lo desencolo de la auxiliar y lo encolo en la cola POSTA de espera para un muelle libre

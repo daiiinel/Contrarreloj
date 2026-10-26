@@ -51,6 +51,11 @@ int main()
                         puts(MSG_NO_SIMULABLE);
                         break;
                     }
+                    else
+                    {
+                        printf("hice todo");
+                        system("pause");
+                    }
                     //tengo que bajar lo del minuto 0 ? yo o dai
                     //pregunto por el movimiento
 
@@ -69,6 +74,6 @@ int main()
         system("cls");
 
     }while(opc!=3);
-
+    printf("todo mal");
     return 0;
 }

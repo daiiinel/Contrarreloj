@@ -61,7 +61,7 @@ typedef struct
     int tiempo;
     int tiempo_maximo;
     unsigned puntaje;
-    tCola cMuelles;
+    tLista lMuelles;
     tCola cCamiones;
     tLista lZonas;
 }tJornada;

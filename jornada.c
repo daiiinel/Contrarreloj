@@ -7,15 +7,14 @@ int nuevaJornada(const char* nomOperador, tJornada jor)
 {
     //estructura que contiene datos de puerto.txt y config.txt
     tParametros param;
-
-    tCola cMuelles,
-          cCamiones;
+    
+    tLista lMuelles;
+    tCola cCamiones;
 
     tMuelle auxMuelle;
 
     tZona auxZona;
     tLista lZonas;
-    void* contenedor;
 
     unsigned i=1;
 
@@ -23,13 +22,13 @@ int nuevaJornada(const char* nomOperador, tJornada jor)
         return NO_SIMULABLE;
 
     ///Muelles
-    crearCola(&cMuelles);
+    tListaCrear(&lMuelles);
 
     while(i< param.cantMuelle + 1)
     {
         sprintf(auxMuelle.nom,"M%d",i);
         auxMuelle.estado=0;
-        if(ponerEnCola(&cMuelles, &auxMuelle,sizeof(tMuelle))!= TODO_OK)
+        if(tListaInsertarAlFinal(&lMuelles, &auxMuelle,sizeof(tMuelle))!= TODO_OK)
             return NO_SIMULABLE;
         i++;
     }
@@ -46,16 +45,15 @@ int nuevaJornada(const char* nomOperador, tJornada jor)
         auxZona.capacidad=param.capPila;
         crearPila(&auxZona.contenedores);
         if(tListaInsertarAlFinal(&lZonas,&auxZona,sizeof(tZona))!= TODO_OK)
-            return NO_SIMULABLE;
+             return NO_SIMULABLE;
         i++;
     }
-
     ///Jornada
     strcpy(jor.operador, nomOperador);
     jor.tiempo=0;
     jor.tiempo_maximo= param.minJornada;
     jor.puntaje=0;
-    jor.cMuelles= cMuelles;
+    jor.lMuelles= lMuelles;
     jor.cCamiones= cCamiones;
     jor.lZonas= lZonas;
 

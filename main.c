@@ -46,7 +46,7 @@ int main()
                     fflush(stdin);
                     gets(nombreOperador);
 
-                    if(nuevaJornada(nombreOperador, jornada)==NO_SIMULABLE)
+                    if(nuevaJornada(nombreOperador, &jornada)==NO_SIMULABLE)
                     {
                         puts(MSG_NO_SIMULABLE);
                         break;

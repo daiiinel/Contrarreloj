@@ -8,29 +8,29 @@
 
 typedef struct jornada
 {
-    char nomBuque[5];
+    char nomBuque[MAX_NOMBRE_BUQUE];
     unsigned tiempoLlegada;
-    tPila* contenedores;
+    tPila contenedores;
 }tBuque;
 
 typedef struct
 {
-    char nom[3];
+    char nom[MAX_NOMBRE_MUELLE];
     tBuque* buque;
     bool estado; /// 0 libre ; 1 ocupado
 }tMuelle;
 
 typedef struct
 {
-    char num[3];
+    char num[MAX_NOMBRE_CAMION];
     unsigned tiempoLlegada;
-    char pedido[5];// una estructura de contenedor??
+    char pedido[MAX_NOMBRE_ZONA];// una estructura de contenedor??
     bool atendido; // 0 no atendido ;   1 atendido
 }tCamiones;
 //los camiones vienen en cola
 typedef struct
 {
-    char nom[3];
+    char nom[MAX_NOMBRE_ZONA];
     unsigned capacidad;
     tPila contenedores;
 }tZona;
@@ -76,7 +76,9 @@ typedef struct
 }tComando;
 
 // habria que pasar, camiones, muelles,
-int nuevaJornada(const char* nomOperador, tJornada jor); 
+int nuevaJornada(const char* nomOperador, tJornada *jor);
 int procesarArrivo();
+
+int bajarPuertoTxt(tJornada*jor);
 
 #endif // JORNADA_H_INCLUDED

@@ -1,4 +1,5 @@
 #include "ListaDinamica.h"
+#include "../constantes.h"
 
 
 void tListaCrear(tLista* pList)
@@ -62,9 +63,8 @@ int tListaInsertarAlFinal(tLista* pList,const void* elem,unsigned tamElem)
 {
     tNodo* nueNodo = (tNodo*)malloc(sizeof(tNodo));
     if(nueNodo == NULL)
-    {
         return SIN_MEM;
-    }
+
     nueNodo->info = malloc(tamElem);
     if(nueNodo->info == NULL)
     {

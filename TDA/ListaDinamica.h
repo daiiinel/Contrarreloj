@@ -5,7 +5,6 @@
 #include "../constantes.h"
 
 #define POS_INVALIDA        4
-#define DUPLICADO           5
 #define LISTA_VACIA         6
 #define NO_EXISTE           7
 

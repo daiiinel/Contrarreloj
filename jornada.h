@@ -3,55 +3,42 @@
 
 #include "constantes.h"
 #include "archivos.h"
-
-typedef struct
-{
-    char nom[3];
-    tBuque* buque;
-    bool estado; /// 0 libre ; 1 ocupado
-}tMuelle;
-// un vector de muelles
+#include "TDA/pila_dinamica.h"
+#include "TDA/ListaDinamica.h"
 
 typedef struct jornada
 {
-    char nomBuque[5];
+    char nomBuque[MAX_NOMBRE_BUQUE];
     unsigned tiempoLlegada;
-    tPila* contenedores
-    //una pila de contenedores?
+    tPila contenedores;
 }tBuque;
 
 typedef struct
 {
-    char num[3];
-    unsigned tiempoLlegada;
-    char pedido[5];// una estructura de contenedor??
-    bool atendido;
-    //tContenedor pedido;
-}tCamiones;
-// cola
+    char nom[MAX_NOMBRE_MUELLE];
+    tBuque* buque;
+    bool estado; /// 0 libre ; 1 ocupado
+}tMuelle;
 
 typedef struct
 {
-    char nom[3];
+    char num[MAX_NOMBRE_CAMION];
+    unsigned tiempoLlegada;
+    char pedido[MAX_NOMBRE_ZONA];// una estructura de contenedor??
+    bool atendido; // 0 no atendido ;   1 atendido
+}tCamiones;
+//los camiones vienen en cola
+typedef struct
+{
+    char nom[MAX_NOMBRE_ZONA];
     unsigned capacidad;
+    tPila contenedores;
 }tZona;
 
 
 // bajo los camiones yo, de puerto.txt que dai trae generado
 // hago una cola de camiones
-/*
 
-por ahora solo hay un id?
-typedef struct
-{
-    char id[5];
-}tContenedor;
-
-*/
-
-
-
-//Para la "gestion de datos"?
 //Uno para el archivo de operadores y el otro para el archivo de jornadas
 typedef struct
 {
@@ -68,21 +55,30 @@ typedef struct
              movimientosRealizados;
 }tEstadisticaJornada;
 
-//se lo paso a pedro
 typedef struct
 {
+    char operador[MAX_NOMBRE_OP];
     int tiempo;
-    /// paso la estructura de los muelles
-    /// de los contenedores
-    ///
+    int tiempo_maximo;
+    int puntaje;
+    tLista lMuelles;
+    tCola cBuques;
+    tCola cCamiones;
+    tLista lZonas;
 }tJornada;
 
-/// para ver el primer u segundo camion bajamos el primero a camionActual y solo vemos el camion primero
-
-
+typedef struct
+{
+    char nomre[4];
+    unsigned tiempoAConsumir;
+    char org[3];
+    char des[3];
+}tComando;
 
 // habria que pasar, camiones, muelles,
-int nuevaJornada(const char* nomOperador); //propuesta por ahora
+int nuevaJornada(const char* nomOperador, tJornada *jor);
+int procesarArrivo();
 
+int bajarPuertoTxt(tJornada*jor);
 
 #endif // JORNADA_H_INCLUDED

@@ -28,10 +28,15 @@
 #define ERROR_ARCH          2
 #define NO_SIMULABLE        3
 #define SIN_MEM             -1
+#define DUPLICADO           5
 
 //cadenas
 #define MAX_NOMBRE_OP       50
 #define MAX_NOMBRE_MUELLE   4
+#define MAX_NOMBRE_ZONA     4
+#define MAX_NOMBRE_CONT     5
+#define MAX_NOMBRE_BUQUE    5
+#define MAX_NOMBRE_CAMION   5
 
 #define TAM_LINEA           100
 

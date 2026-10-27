@@ -236,7 +236,7 @@ bool ampliarVector(tVector* vec)
         return false;
     }
 
-    printf("Ampliacion de %lld a %lld\n",vec->cap,nCap);
+    printf("Ampliacion de %lu a %lu\n", (long unsigned)vec->cap, (long unsigned)nCap);
     vec->v = nVec;
     vec->cap = nCap;
     return true;
@@ -250,7 +250,7 @@ void reducirVector(tVector* vec)
         return;
     }
     vec->v = realloc(vec->v,nCap * vec->tamElem);
-    printf("Reduccion de %lld a %lld\n",vec->cap,nCap);
+    printf("Reduccion de %lu a %lu\n", (long unsigned)vec->cap, (long unsigned)nCap);
     vec->cap = nCap;
 }
 

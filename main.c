@@ -1,6 +1,4 @@
 #include "jornada.h"
-
-
 /*
 PREGUNTAS PROFE:
 -- a la hora de generar el puerto, sigue siendo simulable el caso en el que
@@ -28,13 +26,11 @@ verNPrimeros(tCola *pc, unsigned n) una copia de la cola
 
 */
 
-
-
 int main()
 {
     int opc;
     char nombreOperador[MAX_NOMBRE_OP];
-
+    tJornada jornada;
 
     srand(time(NULL));
 
@@ -46,14 +42,19 @@ int main()
         switch(opc)
         {
             case 1:
-                printf("Ingrese su nombre: ");
-                fflush(stdin);
-                gets(nombreOperador);
-                if(nuevaJornada(nombreOperador)==NO_SIMULABLE)
-                {
-                    puts(MSG_NO_SIMULABLE);
-                    return NO_SIMULABLE;
-                }
+                    printf("Ingrese su nombre: ");
+                    fflush(stdin);
+                    gets(nombreOperador);
+
+                    if(nuevaJornada(nombreOperador, &jornada)==NO_SIMULABLE)
+                    {
+                        puts(MSG_NO_SIMULABLE);
+                        break;
+                    }
+
+
+                    //tengo que bajar lo del minuto 0 ? yo o dai
+                    //pregunto por el movimiento se lo pido al pibe
 
                 break;
             case 2:
@@ -61,12 +62,14 @@ int main()
                 break;
             case 3:
                 break;
-            default: puts("Opcion invalida, reingrese..");
-                    system("pause");
-                    break;
+            default:
+                puts("Opcion invalida, reingrese..");
+                system("pause");
+                break;
         }
 
         system("cls");
+
     }while(opc!=3);
 
     return 0;

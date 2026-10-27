@@ -16,7 +16,7 @@ int pedirYEjecutarComando( )
     return TODO_OK;
 }
 */
-
+/*
 int ejecutarComandoOperacion(tLista* zona,tVector* muelle,tCola* camion,tParametros* parametros,tJornada* jornada)
 {
     tOperacion operacion;
@@ -34,21 +34,22 @@ int ejecutarComandoOperacion(tLista* zona,tVector* muelle,tCola* camion,tParamet
         tListaSacarElemOrd(zona,&zona1,sizeof(tZona),cmpZona);
         break;
     case REU:
-        /* code */
+
         break;
     case ENT:
-        /* code */
+
         break;
     case ESP:
-        /* code */
+
         break;
     case VER:
-        /* code */
+
         break;
-    
+
     default:
         break;
     }
+
 }
 
 int ingresarValidar ()
@@ -56,3 +57,4 @@ int ingresarValidar ()
     return TODO_OK;
 }
 
+*/

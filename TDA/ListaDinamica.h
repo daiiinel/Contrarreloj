@@ -7,7 +7,7 @@
 #define POS_INVALIDA        4
 #define DUPLICADO           5
 #define LISTA_VACIA         6
-#define NO_EXISTE           7
+#define NO_EXISTE           -1
 
 typedef tNodo* tLista;
 
@@ -26,6 +26,7 @@ int tListaInsertarOrdConDupli(tLista *pList,const void* elem,unsigned tamElem,Cm
 int tListaSacarElem(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
 int tListaSacarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
 int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar);
+
 
 void tListaIntercambiarDatoNodo(tLista* pList1,tLista* pList2);
 

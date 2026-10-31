@@ -3,10 +3,14 @@
 
 #include "constantes.h"
 #include "archivos.h"
+#include "TDA/ListaDinamica.h"
+#include "TDA/pila_dinamica.h"
+
+#define TAM_NOMBRE     5
 
 typedef struct
 {
-    char nom[3];
+    char nom[TAM_NOMBRE];
     tBuque* buque;
     bool estado; /// 0 libre ; 1 ocupado
 }tMuelle;
@@ -14,15 +18,14 @@ typedef struct
 
 typedef struct jornada
 {
-    char nomBuque[5];
+    char nomBuque[TAM_NOMBRE];
     unsigned tiempoLlegada;
-    tPila* contenedores
-    //una pila de contenedores?
+    tPila* contenedores;
 }tBuque;
 
 typedef struct
 {
-    char num[3];
+    char num[TAM_NOMBRE];
     unsigned tiempoLlegada;
     char pedido[5];// una estructura de contenedor??
     bool atendido;
@@ -32,23 +35,20 @@ typedef struct
 
 typedef struct
 {
-    char nom[5];
+    char nom[TAM_NOMBRE];
     unsigned capacidad;
+    unsigned cantContenedores;
+    tPila* contenedores;
 }tZona;
 
 
 // bajo los camiones yo, de puerto.txt que dai trae generado
 // hago una cola de camiones
-/*
 
-por ahora solo hay un id?
 typedef struct
 {
-    char id[5];
+    char id[TAM_NOMBRE];
 }tContenedor;
-
-*/
-
 
 
 //Para la "gestion de datos"?
@@ -71,10 +71,14 @@ typedef struct
 //se lo paso a pedro
 typedef struct
 {
+    char operador[MAX_NOMBRE_OP];
     int tiempo;
-    /// paso la estructura de los muelles
-    /// de los contenedores
-    ///
+    int tiempo_maximo;
+    int puntaje;
+    tLista lMuelles;
+    tCola cBuques;
+    tCola cCamiones;
+    tLista lZonas;
 }tJornada;
 
 /// para ver el primer u segundo camion bajamos el primero a camionActual y solo vemos el camion primero

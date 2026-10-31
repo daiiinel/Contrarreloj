@@ -42,7 +42,7 @@
 typedef int(*Cmp)(const void* a,const void* b);
 typedef void(*Accion)(void* info,void* param);
 typedef void(*Print)(const void* info);
-typedef int(*Actualizar)(void* actualizado,const void* actualizador);
+typedef void(*Actualizar)(void* actualizado,const void* actualizador);
 
 
 #endif // CONSTANTES_H_INCLUDED

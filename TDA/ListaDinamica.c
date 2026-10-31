@@ -287,6 +287,25 @@ int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar)
     return TODO_OK;
 }
 
+int tListaBuscarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp)
+{
+    int pos=0;
+    while(*pList != NULL && cmp(elem,(*pList)->info))
+    {
+        pList = &(*pList)->sig;
+        pos++;
+    }
+
+    if(*pList == NULL)
+    {
+        return NO_EXISTE;
+    }
+
+    memcpy(elem,(*pList)->info,minimoLista(tamElem,(*pList)->tam));
+
+    return pos;
+}
+
 void tListaIntercambiarDatoNodo(tLista* pList1,tLista* pList2)
 {
     unsigned auxTamDato;

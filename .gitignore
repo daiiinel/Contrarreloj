@@ -5,6 +5,7 @@
 # Carpetas de compilacion (objetos y binarios)
 bin/
 obj/
+.vscode/
 
 # Archivos de salida/generados por el programa
 puerto.txt

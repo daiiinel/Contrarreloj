@@ -21,8 +21,7 @@ typedef struct
     size_t tamElem;
 }tVector;
 
-typedef int (*Cmp)(const void* a,const void*b);
-typedef void (*Print)(const void *elem);
+
 
 bool tVectorCrear(tVector* vec,size_t tamElem); //malloc
 int tVectorOrdInsertar(tVector* vec,const void* elem,Cmp cmp); //realloc

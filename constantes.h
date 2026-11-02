@@ -22,13 +22,18 @@
                          "\t Verifique que el archivo config.txt \n"\
                          "\t tenga valores simulables y reintente\n"
 
+#define MSG_ERROR_OPERADOR "\n\t --- Simulacion fallida --- \n "\
+                            "\t Error al procesar Operador \n"\
+                            "\t Reintente nuevamente\n"
+
 //salidas
 #define TODO_OK             0
 #define ERROR_COMANDO       1
 #define ERROR_ARCH          2
 #define NO_SIMULABLE        3
 #define SIN_MEM             -1
-#define DUPLICADO           5
+#define DUPLICADO           4
+#define NO_EXISTE           5
 
 //cadenas
 #define MAX_NOMBRE_OP       50
@@ -41,8 +46,10 @@
 #define TAM_LINEA           100
 
 //nombres de archivos
-#define PUERTO_ARCH     "puerto.txt"
-#define CONF_ARCH       "config.txt"
+#define PUERTO_ARCH             "puerto.txt"
+#define CONF_ARCH               "config.txt"
+#define IDX_OPERADORES_ARCH     "operadores.idx"
+#define OPERADORES_ARCH         "operadores.dat"
 
 //valores estaticos��
 #define CAMIONES_A_MOSTRAR  3 //en item "mostrar los 3 primeros de la cola de K"

@@ -3,8 +3,11 @@
 
 #include "constantes.h"
 #include "archivos.h"
+#include "operadores.h"
+
 #include "TDA/pila_dinamica.h"
 #include "TDA/ListaDinamica.h"
+#include "TDA/abb.h"
 
 typedef struct jornada
 {
@@ -40,17 +43,17 @@ typedef struct
 // hago una cola de camiones
 
 //Uno para el archivo de operadores y el otro para el archivo de jornadas
-typedef struct
-{
-    char *nom;
-    unsigned cantMov,
-             puntuacion;
-
-}tEstadisticasOperadores;
+//typedef struct
+//{
+//    char nomOperador[MAX_NOMBRE_OP];
+//    unsigned cantMov,
+//             puntuacion;
+//
+//}tEstadisticasOperadores;
 typedef struct
 {
     unsigned numJornada;
-    char *nomOperador;
+    char nomOperador[MAX_NOMBRE_OP];
     unsigned puntuacionObtenida,
              movimientosRealizados;
 }tEstadisticaJornada;
@@ -76,7 +79,7 @@ typedef struct
 }tComando;
 
 // habria que pasar, camiones, muelles,
-int nuevaJornada(const char* nomOperador, tJornada *jor);
+int nuevaJornada(tEstadisticasOperadores*datosOperador, tJornada *jor);
 int procesarArrivo();
 
 int bajarPuertoTxt(tJornada*jor);

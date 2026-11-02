@@ -301,3 +301,15 @@ void tListaIntercambiarDatoNodo(tLista* pList1,tLista* pList2)
 }
 
 
+void* tListaBuscarPorPos(tLista* pl, unsigned pos)
+{
+    unsigned i=1;
+
+    while(*pl && i<pos)
+    {
+        pl = &(*pl)->sig;
+        i++;
+    }
+
+    return *pl==NULL ? NULL:(*pl)->info;
+}

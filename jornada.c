@@ -40,7 +40,7 @@ void mostrarPilaContenedores(tPila* p)
 */
 
 //propuesta/pseudocodigo
-int nuevaJornada(const char* nomOperador, tJornada* jor)
+int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor)
 {
     //estructura que contiene datos de puerto.txt y config.txt
     tParametros param;
@@ -91,7 +91,7 @@ int nuevaJornada(const char* nomOperador, tJornada* jor)
     }
 
     //Jornada
-    strcpy(jor->operador, nomOperador);
+   // strcpy(jor->operador, nomOperador);
     jor->tiempo=0;
     jor->tiempo_maximo= param.minJornada;
     jor->puntaje=0;

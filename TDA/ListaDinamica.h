@@ -6,7 +6,7 @@
 
 #define POS_INVALIDA        4
 #define LISTA_VACIA         6
-#define NO_EXISTE           7
+//#define NO_EXISTE           7
 
 typedef tNodo* tLista;
 
@@ -28,6 +28,6 @@ int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar);
 
 void tListaIntercambiarDatoNodo(tLista* pList1,tLista* pList2);
 
-
+void* tListaBuscarPorPos(tLista* pl, unsigned pos);
 
 #endif // LISTADINAMICA_H_INCLUDED

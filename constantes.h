@@ -9,6 +9,7 @@
 
 //FUNCIONES MACRO
 #define MIN(X,Y) ((X)<=(Y)? (X):(Y))
+#define A_MAYUSCULA(c) (((c) >= 'a' && (c) <= 'z') ? ((c) - 32) : (c))
 
 //printsf
 #define MENU_INICIO "\n\t --- Puerto de contenedores - Operacion Contrarreloj --- \n" \

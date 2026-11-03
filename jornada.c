@@ -82,3 +82,17 @@ int nuevaJornada(const char* nomOperador)
 
     return TODO_OK;
 }
+
+tBuque* tMuelleVerBuque(tMuelle* muelle)
+{
+    return muelle->buque;
+}
+tPila* tBuqueVerPila(tBuque* pBuque)
+{
+    return pBuque->contenedores;
+}
+
+tPila* tZonaVerPila(tZona* pZona)
+{
+    return pZona->contenedores;
+}

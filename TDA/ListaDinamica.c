@@ -301,7 +301,7 @@ int tListaBuscarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp)
         return NO_EXISTE;
     }
 
-    memcpy(elem,(*pList)->info,minimoLista(tamElem,(*pList)->tam));
+    memcpy(elem,(*pList)->info,MIN(tamElem,(*pList)->tam));
 
     return pos;
 }

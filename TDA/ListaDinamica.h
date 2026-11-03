@@ -26,7 +26,7 @@ int tListaInsertarOrdConDupli(tLista *pList,const void* elem,unsigned tamElem,Cm
 int tListaSacarElem(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
 int tListaSacarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
 int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar);
-
+int tListaBuscarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
 
 void tListaIntercambiarDatoNodo(tLista* pList1,tLista* pList2);
 

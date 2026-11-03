@@ -2,12 +2,8 @@
 #define COMANDOS_H_INCLUDED
 
 #include "constantes.h"
-#include "TDA/colaDinamica.h"
-#include "TDA/pila_dinamica.h"
-#include "TDA/ListaDinamica.h"
 #include "archivos.h"
 #include "jornada.h"
-#include "TDA/Vector.h"
 
 typedef enum
 {
@@ -23,7 +19,6 @@ typedef enum
 #define TIEMPO_ESP       1
 
 #define ERROR_INGRESO_COMANDO -1
-#define ERROR_COMANDO         -2
 #define CODIGO_OP "OPERADOR>"
 //OPERACIONES
 #define ENT "ENT"
@@ -33,15 +28,15 @@ typedef enum
 #define VER "VER"
 #define ESP "ESP"
 
-typedef struct 
+typedef struct tComando
 {
     char nomComando[TAM_OPERACION];
     int cantArg;
     int tiempoUso;
-    int (*procesarComando)(const char* argv[],tJornada* jornada,const tComando* comando,tCola* buqsEsp,tCola* camsEsp);
+    int (*procesarComando)(char* argv[],tJornada* jornada,const struct tComando* comando);
 }tComando;
 
-typedef struct 
+typedef struct
 {
     char codComando[TAM_OPERACION];
     char origen[TAM_ARGUMENTO];
@@ -50,12 +45,13 @@ typedef struct
     int cantArg;
 }tRegistroComando;
 
-int ejecutarComandoOperacion(tJornada* jornada,tVector* comandos,tCola* buquesEsp, tCola* camionEsp);
+int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos);
 
 int cargarComandos(tParametros* param);
-int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tVector* comandos);
+int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* comandos);
 
-int procesarComandoDES(const char* argv[],tJornada* jornada,tComando* comando,tCola* buquesEsp, tCola* camionEsp);
+int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando);
+int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando);
 
 int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada);
 int validarREU(tZona* zona1,tZona* zona2,tJornada* jornada);
@@ -65,7 +61,7 @@ int operacionDES(tMuelle* muelle,tZona* zona);
 int operacionREU(tZona* pZona1,tZona* pZona2);
 int operacionENT(tZona* pZona,tCamiones pCamion);
 void comandoESP(tJornada* pJornada);
-void comandoVER(tLista* pZona,tVector* pMuelle,tCola* pCamion,tParametros* pParametros,tJornada* pJornada);
+void comandoVER(tLista* pZona,tLista* pMuelle,tCola* pCamion,tParametros* pParametros,tJornada* pJornada);
 
 int cmpZona(const void* a,const void* b);
 int cmpMuelle(const void* a,const void* b);
@@ -74,9 +70,7 @@ int cmpComando(const void* a,const void* b);
 void actualizarZona(void* actualizado,const void* actualizador);
 void actualizarMuelle(void* actualizado,const void* actualizador);
 
-int validarTiempo(tJornada* jornada,tComando* comando);
-
-
+int validarTiempo(const tJornada* jornada,const int tiempoAgregado);
 
 
 #endif // COMANDOS_H_INCLUDED

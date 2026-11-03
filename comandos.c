@@ -1,26 +1,26 @@
 #include "comandos.h"
 
-int cargarVectorComandos(tVector* vec,tParametros* param)
+void copiarCadenaAMayus(char* destino,char* origen);
+void aMayusCadena(char* cadena);
+
+int cargarVectorComandos(tLista* pList,tParametros* param)
 {
-    int codRet,cantComandos,i=0;
-    tComando vecComandos[] = 
+    int codRet=0,cantComandos,i=0;
+    tComando listComandos[] =
     {
-        {DES,CANT_ARG_OP,param->tiempoDescargaCont},procesarComandoDES,
-        {REU,CANT_ARG_OP,param->tiempoReubicacion,NULL},
+        {DES,CANT_ARG_OP,param->tiempoDescargaCont,procesarComandoDES},
+        {REU,CANT_ARG_OP,param->tiempoReubicacion,procesarComandoREU},
         {ENT,CANT_ARG_OP,param->tiempoCargaCamion,NULL},
         {ESP,CANT_ARG_COM,TIEMPO_ESP,NULL},
         {VER,CANT_ARG_COM,0,NULL}
 
     };
-    cantComandos = sizeof(vecComandos)/sizeof(tComando);
-    codRet = tVectorCrear(vec,sizeof(tComando));
-    if(codRet)
-    {
-        return codRet;
-    }
+    cantComandos = sizeof(listComandos)/sizeof(tComando);
+    tListaCrear(pList);
     while(codRet == 0 && i < cantComandos)
     {
-        codRet = tVectorOrdInsertar(vec,vecComandos+i,cmpComando);
+        codRet = tListaInsertarOrdSinDupli(pList,listComandos+i,sizeof(tComando),cmpComando);
+        i++;
     }
     if(codRet)
     {
@@ -29,12 +29,12 @@ int cargarVectorComandos(tVector* vec,tParametros* param)
     return TODO_OK;
 }
 
-int ejecutarComandoOperacion(tJornada* jornada,tVector* comandos,tCola* buquesEsp, tCola* camionEsp)
+int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos)
 {
     char linea[TAM_LINEA];
     char* argumentos[TAM_ARG];
     tComando comando;
-    
+
 
     //El usuario ingresa un comando
     if(leerComandoOperacion(linea,argumentos,&comando,comandos))
@@ -43,14 +43,14 @@ int ejecutarComandoOperacion(tJornada* jornada,tVector* comandos,tCola* buquesEs
     }
     //utilizo el puntero a funcion de la estructura
     //Esta funcion se encarga de validar y ejecutar el comando
-    comando.procesarComando(argumentos,jornada,&comando,buquesEsp,camionEsp);
-    
+    comando.procesarComando(argumentos,jornada,&comando);
+
 
     //Guardar historia
     return TODO_OK;
 }
 
-int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tVector* comandos)
+int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* comandos)
 {
     char* act;
     int cant = 0;
@@ -78,9 +78,9 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tVector* 
     }
 
     //Valido si existe la opracion
-    strcpy(comando->nomComando,*palabras);
+    copiarCadenaAMayus(comando->nomComando,*palabras);
     ///Recordar:Agregar una funcion que copie sin pasarse del tamanio de liinea
-    if(tVectorOrdBuscar(comandos,comando,cmpComando))
+    if(tListaBuscarElemOrd(comandos,comando,sizeof(tComando),cmpComando) < 0)
     {
         puts("No existe el comando ingresado");
         return ERROR_INGRESO_COMANDO;
@@ -96,18 +96,18 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tVector* 
     return TODO_OK;
 }
 
-int procesarComandoDES(const char* argv[],tJornada* jornada,tComando* comando,tCola* buquesEsp, tCola* camionEsp)
+int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando)
 {
     tMuelle muelle;
     tZona zona;
-    if(validarTiempo(jornada,comando))
+    if(validarTiempo(jornada,comando->tiempoUso))
     {
         puts("Tiempo insuficiente");
         return ERROR_COMANDO;
     }
-    strncpy(muelle.nom,argv[arg1],TAM_NOMBRE);
-    strncpy(zona.nom,argv[arg2],TAM_NOMBRE);
-    
+    copiarCadenaAMayus(muelle.nom,argv[arg1]);
+    copiarCadenaAMayus(zona.nom,argv[arg2]);
+
     if(validarDES(&muelle,&zona,jornada))
     {
         return ERROR_COMANDO;
@@ -118,7 +118,7 @@ int procesarComandoDES(const char* argv[],tJornada* jornada,tComando* comando,tC
 
     operacionDES(&muelle,&zona);
     //actualizo puntos
-    zona.capacidad--;
+    zona.cantContenedores++;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
     tListaInsertarOrdConDupli(&jornada->lMuelles,&muelle,sizeof(tMuelle),cmpMuelle,actualizarMuelle);
 
@@ -134,39 +134,113 @@ int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada)
         puts("Error argumento 1");
         return ERROR_COMANDO;
     }
-    if(tListaBuscarElemOrd(&jornada->lZonas,zona,sizeof(tZona),cmpZona) < 0)
+    else if(tListaBuscarElemOrd(&jornada->lZonas,zona,sizeof(tZona),cmpZona) < 0)
     {
         puts("Error en argumento 2.");
         return ERROR_COMANDO;
     }
     //Valido que el muelle este ocupado
-    if(muelle->estado == false)
+    else if(muelle->estado == false)
     {
         puts("Muelle sin carga pendiente");
         return ERROR_COMANDO;
     }
     //Valido que hay espacio
-    if(zona->capacidad == 0)
+    else if(zona->capacidad == 0)
     {
         puts("Zona sin espacio");
         return ERROR_COMANDO;
+    }else
+    {
+        return TODO_OK;
     }
-    return TODO_OK;
 }
 
 int operacionDES(tMuelle* muelle,tZona* zona)
 {
-    tPila* pilaConteBuque = muelle->buque->contenedores;
-    tPila* pilaConteZona = zona->contenedores;
     tContenedor conte;
+    tBuque* buqueAux;
+    tPila* pilaConteBuque;
+    tPila* pilaConteZona;
+    buqueAux = tMuelleVerBuque(muelle);
+    pilaConteBuque = tBuqueVerPila(buqueAux);
+    pilaConteZona = tZonaVerPila(zona);
 
     desapilar(pilaConteBuque,&conte,sizeof(tContenedor));
-    if(pilaVacia(pilaConteBuque))
-    {
-        muelle->estado = false;
-        //sumar 2 puntos
-    }
     apilar(pilaConteZona,&conte,sizeof(tContenedor));
+    return TODO_OK;
+}
+
+int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando)
+{
+    tZona zona1;
+    tZona zona2;
+    if(validarTiempo(jornada,comando->tiempoUso))
+    {
+        puts("Tiempo insuficiente");
+        return ERROR_COMANDO;
+    }
+    copiarCadenaAMayus(zona1.nom,argv[arg1]);
+    copiarCadenaAMayus(zona2.nom,argv[arg2]);
+
+    if(validarREU(&zona1,&zona2,jornada))
+    {
+        return ERROR_COMANDO;
+    }
+    //Si hay un evento en el medio antes de que termine la operacion
+    //en este momento se actualiza
+
+    operacionREU(&zona1,&zona2);
+
+    zona1.cantContenedores--;
+    zona2.cantContenedores++;
+    tListaInsertarOrdConDupli(&jornada->lZonas,&zona1,sizeof(tZona),cmpZona,actualizarZona);
+    tListaInsertarOrdConDupli(&jornada->lZonas,&zona2,sizeof(tZona),cmpMuelle,actualizarZona);
+    return TODO_OK;
+}
+
+int validarREU(tZona* zona1,tZona* zona2,tJornada* jornada)
+{
+    if(tListaBuscarElemOrd(&jornada->lZonas,zona1,sizeof(tMuelle),cmpZona) < 0)
+    {
+        puts("Error argumento 1");
+        return ERROR_COMANDO;
+    }
+    else if(tListaBuscarElemOrd(&jornada->lZonas,zona2,sizeof(tZona),cmpZona) < 0)
+    {
+        puts("Error en argumento 2.");
+        return ERROR_COMANDO;
+    }
+    else if(strcmp(zona1->nom,zona2->nom) == 0)
+    {
+        printf("Mismo origen que destino");
+        return ERROR_COMANDO;
+    }
+    else if(zona1->cantContenedores == 0)
+    {
+        puts("Zona origen vacio");
+        return ERROR_ARCH;
+    }
+    else if(zona2->capacidad == zona2->cantContenedores)
+    {
+        puts("Zona destino sin espacio");
+        return ERROR_ARCH;
+    }else
+    {
+        return TODO_OK;
+    }
+}
+
+int operacionREU(tZona* pZona1,tZona* pZona2)
+{
+    tPila* pilaZona1,*pilaZona2;
+    tContenedor auxContenedor;
+    pilaZona1 = tZonaVerPila(pZona1);
+    pilaZona2 = tZonaVerPila(pZona2);
+
+    desapilar(pilaZona1,&auxContenedor,sizeof(tContenedor));
+    apilar(pilaZona2,&auxContenedor,sizeof(tContenedor));
+
     return TODO_OK;
 }
 
@@ -174,7 +248,7 @@ int cmpZona(const void* a,const void* b)
 {
     const tZona* zona1 = (tZona*)a;
     const tZona* zona2 = (tZona*)b;
-    
+
     return strcmp(zona1->nom,zona2->nom);
 }
 
@@ -209,8 +283,25 @@ void actualizarMuelle(void* actualizado,const void* actualizador)
     muelle1->estado = muelle2->estado;
 }
 
-int validarTiempo(tJornada* jornada,tComando* comando)
+int validarTiempo(const tJornada* jornada,const int tiempoAgregado)
 {
-    int nueTiempo = comando->tiempoUso + jornada->tiempo;
+    int nueTiempo = tiempoAgregado + jornada->tiempo;
     return jornada->tiempo_maximo <= nueTiempo;
+}
+
+void copiarCadenaAMayus(char* destino,char* origen)
+{
+    aMayusCadena(origen);
+    strncpy(destino,origen,sizeof(TAM_ARG));
+    *(destino + TAM_ARG-1) = '\0';
+}
+
+void aMayusCadena(char* cadena)
+{
+    int i=0;
+    while (*(cadena + i) != '\0')
+    {
+        *(cadena + i) = A_MAYUSCULA(*(cadena + i));
+        i++;
+    }
 }

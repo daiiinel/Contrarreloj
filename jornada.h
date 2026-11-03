@@ -5,16 +5,9 @@
 #include "archivos.h"
 #include "TDA/ListaDinamica.h"
 #include "TDA/pila_dinamica.h"
+#include "TDA/colaDinamica.h"
 
 #define TAM_NOMBRE     5
-
-typedef struct
-{
-    char nom[TAM_NOMBRE];
-    tBuque* buque;
-    bool estado; /// 0 libre ; 1 ocupado
-}tMuelle;
-// un vector de muelles
 
 typedef struct jornada
 {
@@ -22,6 +15,17 @@ typedef struct jornada
     unsigned tiempoLlegada;
     tPila* contenedores;
 }tBuque;
+
+tPila* tBuqueVerPila(tBuque* pBuque);
+
+typedef struct
+{
+    char nom[TAM_NOMBRE];
+    tBuque* buque;
+    bool estado; /// 0 libre ; 1 ocupado
+}tMuelle;
+
+tBuque* tMuelleVerBuque(tMuelle* muelle);
 
 typedef struct
 {
@@ -41,6 +45,7 @@ typedef struct
     tPila* contenedores;
 }tZona;
 
+tPila* tZonaVerPila(tZona* pZona);
 
 // bajo los camiones yo, de puerto.txt que dai trae generado
 // hago una cola de camiones

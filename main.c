@@ -42,19 +42,18 @@ int main()
     {
         puts(MENU_INICIO);
         scanf("%d", &opc);
+        getchar();
 
         switch(opc)
         {
             case 1:
                 printf("Ingrese su nombre: ");
-                fflush(stdin);
-                gets(nombreOperador);
+                fgets(nombreOperador,MAX_NOMBRE_OP,stdin);
                 if(nuevaJornada(nombreOperador)==NO_SIMULABLE)
                 {
                     puts(MSG_NO_SIMULABLE);
                     return NO_SIMULABLE;
                 }
-
                 break;
             case 2:
                 //verRanking(); //--prox en operadores.h (persistencia de datos)

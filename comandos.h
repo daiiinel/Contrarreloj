@@ -52,14 +52,16 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
 
 int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando);
 int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando);
+int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando);
+
 
 int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada);
 int validarREU(tZona* zona1,tZona* zona2,tJornada* jornada);
-int validarENT(tZona* zona,tCamiones* camion,tJornada* jornada);
+int validarENT(tLista* lZonas,tCola* cCamionesEsp,tZona* zona);
 
 int operacionDES(tMuelle* muelle,tZona* zona);
 int operacionREU(tZona* pZona1,tZona* pZona2);
-int operacionENT(tZona* pZona,tCamiones pCamion);
+int operacionENT(tZona* pZona,tCola* pCamiones);
 void comandoESP(tJornada* pJornada);
 void comandoVER(tLista* pZona,tLista* pMuelle,tCola* pCamion,tParametros* pParametros,tJornada* pJornada);
 
@@ -71,6 +73,7 @@ void actualizarZona(void* actualizado,const void* actualizador);
 void actualizarMuelle(void* actualizado,const void* actualizador);
 
 int validarTiempo(const tJornada* jornada,const int tiempoAgregado);
+int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor);
 
 
 #endif // COMANDOS_H_INCLUDED

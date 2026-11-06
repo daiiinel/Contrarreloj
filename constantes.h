@@ -29,6 +29,7 @@
 #define ERROR_ARCH          2
 #define NO_SIMULABLE        3
 #define SIN_MEM             -1
+#define NO_EXISTE           -1
 
 //cadenas
 #define MAX_NOMBRE_OP       50

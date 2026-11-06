@@ -244,6 +244,57 @@ int operacionREU(tZona* pZona1,tZona* pZona2)
     return TODO_OK;
 }
 
+int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando)
+{
+    tZona zona;
+    if(validarTiempo(jornada,comando->tiempoUso))
+    {
+        puts("Tiempo insuficiente");
+        return ERROR_COMANDO;
+    }
+
+    if(validarENT(&jornada->lZonas,&jornada->cCamionesEnEsp,&zona))
+    {
+        return ERROR_ARCH;
+    }
+
+    operacionENT(&zona,&jornada->cCamionesEnEsp);
+    zona.cantContenedores--;
+    tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
+
+    return TODO_OK;
+}
+
+int validarENT(tLista* lZonas,tCola* cCamionesEsp,tZona* zona)
+{
+    tCamiones camion;
+    tContenedor contenedor;
+    if(verPrimeroEnCola(cCamionesEsp,&camion,sizeof(tCamiones)))
+    {
+        puts("No hay camiones en cola de espera");
+        return ERROR_ARCH;
+    }
+    strcpy(contenedor.id,camion.pedido);
+    if(buscarContenedorEnZonas(lZonas,zona,&contenedor) == NO_EXISTE)
+    {
+        puts("El contenedor no esta en el tope de alguna zona");
+        return ERROR_ARCH;
+    }
+    return TODO_OK;
+}
+
+int operacionENT(tZona* pZona,tCola* pCamiones)
+{
+    tContenedor elimCont1,elimCont2;
+    tPila* pPila;
+    pPila = tZonaVerPila(pZona);
+
+    desapilar(pPila,&elimCont1,sizeof(tContenedor));
+    sacarDeCola(pCamiones,&elimCont2,sizeof(tContenedor));
+
+    return TODO_OK;
+}
+
 int cmpZona(const void* a,const void* b)
 {
     const tZona* zona1 = (tZona*)a;
@@ -272,7 +323,7 @@ void actualizarZona(void* actualizado,const void* actualizador)
     tZona* zona1 = (tZona*)actualizado;
     const tZona* zona2 = (const tZona*)actualizador;
 
-    zona1->capacidad = zona2->capacidad;
+    zona1->cantContenedores = zona2->cantContenedores;
 }
 
 void actualizarMuelle(void* actualizado,const void* actualizador)
@@ -287,6 +338,37 @@ int validarTiempo(const tJornada* jornada,const int tiempoAgregado)
 {
     int nueTiempo = tiempoAgregado + jornada->tiempo;
     return jornada->tiempo_maximo <= nueTiempo;
+}
+
+int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
+{
+    int pos = -1, i=0;
+    tPila* pPila;
+    tZona* pZona;
+    tContenedor auxContenedor;
+    pZona = tListaBuscarPorPos(zonas,i);
+
+
+    while(pZona != NULL && pos == -1)
+    {
+        pPila = tZonaVerPila(pZona);
+        if(verTope(pPila,&auxContenedor,sizeof(tContenedor)))
+        {
+            i++;
+            pZona = tListaBuscarPorPos(zonas,i);
+        }
+        else if(strcmp(contenedor->id,auxContenedor.id) == 0)
+        {
+            pos = i;
+            memcpy(zona,pZona,sizeof(tZona));
+        }
+        else
+        {
+            i++;
+            pZona = tListaBuscarPorPos(zonas,i);
+        }
+    }
+    return pos;
 }
 
 void copiarCadenaAMayus(char* destino,char* origen)

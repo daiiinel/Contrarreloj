@@ -84,6 +84,8 @@ typedef struct
     tCola cBuques;
     tCola cCamiones;
     tLista lZonas;
+    tCola cCamionesEnEsp;
+    tCola cBuquesEnEsp;
 }tJornada;
 
 /// para ver el primer u segundo camion bajamos el primero a camionActual y solo vemos el camion primero

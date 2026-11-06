@@ -7,13 +7,15 @@
 #define POS_INVALIDA        4
 #define DUPLICADO           5
 #define LISTA_VACIA         6
-#define NO_EXISTE           -1
+
 
 typedef tNodo* tLista;
 
 
 void tListaCrear(tLista* pList);
 void tListaVaciar(tLista* pList);
+int tListaVacia(tLista* pList);
+int tListaLlena(tLista* pList,unsigned tamElem);
 void tListaRecorrer(tLista* pList,Accion accion,void* param);
 void tListaMostrar(tLista* pList,Print print);
 
@@ -22,9 +24,12 @@ int tListaInsertarEnPos(tLista *pList,const void* elem,unsigned tamElem,unsigned
 int tListaInsertarOrdSinDupli(tLista *pList,const void* elem,unsigned tamElem,Cmp cmp);
 int tListaInsertarOrdConDupli(tLista *pList,const void* elem,unsigned tamElem,Cmp cmp,Actualizar actualizar);
 
-
+int tListaSacarInicio(tLista* pList,void* elem,unsigned tamElem);
 int tListaSacarElem(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
 int tListaSacarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
+
+void* tListaBuscarPorPos(tLista *pList,unsigned pos);
+
 int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar);
 int tListaBuscarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp);
 

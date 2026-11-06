@@ -18,6 +18,20 @@ void tListaVaciar(tLista* pList)
     }
 }
 
+int tListaVacia(tLista* pList)
+{
+    return *pList == NULL;
+}
+
+int tListaLlena(tLista* pList,unsigned tamElem)
+{
+    tNodo* nueNodo = (tNodo*)malloc(sizeof(tNodo));
+    void* nueinfo = malloc(tamElem);
+    free(nueinfo);
+    free(nueNodo);
+    return nueNodo == NULL || nueinfo == NULL;
+}
+
 void tListaRecorrer(tLista* pList,Accion accion,void* param)
 {
     while(*pList)
@@ -248,6 +262,18 @@ int tListaSacarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp)
     free(elim->info);
     free(elim);
     return TODO_OK;
+}
+
+void* tListaBuscarPorPos(tLista *pList,unsigned pos)
+{
+    unsigned i = 0;
+    while(*pList && i < pos)
+    {
+        pList = &(*pList)->sig;
+        i++;
+    }
+
+    return *pList == NULL? NULL:(*pList)->info;
 }
 
 int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar)

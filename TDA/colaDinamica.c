@@ -11,7 +11,7 @@ int colaLlena(tCola* pc, unsigned cantBytes)
     tNodo* aux=(tNodo*)malloc(sizeof(tNodo));
     void* info=malloc(cantBytes);
     free(aux);
-    free(aux->info);
+    free(info);
     return((aux==NULL || info==NULL)?SIN_MEM:TODO_OK);
 }
 

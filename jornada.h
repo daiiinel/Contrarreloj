@@ -6,6 +6,11 @@
 #include "TDA/pila_dinamica.h"
 #include "TDA/ListaDinamica.h"
 
+#define FIN_JORNADA 8
+#define BLOQUE_OPERATIVO 9
+#define SIN_TIEMPO 10
+#define SIGUE 11
+
 typedef struct jornada
 {
     char nomBuque[MAX_NOMBRE_BUQUE];
@@ -43,8 +48,7 @@ typedef struct
 typedef struct
 {
     char *nom;
-    unsigned cantMov,
-             puntuacion;
+    unsigned puntuacion;
 
 }tEstadisticasOperadores;
 typedef struct
@@ -52,7 +56,7 @@ typedef struct
     unsigned numJornada;
     char *nomOperador;
     unsigned puntuacionObtenida,
-             movimientosRealizados;
+             movimientosRealizados, cantMov;
 }tEstadisticaJornada;
 
 typedef struct
@@ -64,6 +68,8 @@ typedef struct
     tLista lMuelles;
     tCola cBuques;
     tCola cCamiones;
+    tCola buquesEnTiempo;
+    tCola camionesEnTiempo;
     tLista lZonas;
 }tJornada;
 
@@ -75,10 +81,31 @@ typedef struct
     char des[3];
 }tComando;
 
-// habria que pasar, camiones, muelles,
+//Seteo de jornada
 int nuevaJornada(const char* nomOperador, tJornada *jor);
-int procesarArrivo();
-
 int bajarPuertoTxt(tJornada*jor);
+
+//Jornada
+int desarrolloJornada(tJornada* jor);
+void verKPrimeros(tCola* camionesEspera);
+
+//Arrivos
+int procesarArrivos(tJornada *jor);
+int arrivoCamiones(tJornada* jor);
+int arrivoBuques(tJornada* jor);
+int acercarBuques(tJornada* jor);
+int cmpMuelleLibre(const void* reg1, const void* estado);
+int cmpMuelleNom(const void* reg1,const void* reg2);
+void actualizarMuelle(void* viejo, void* nuevo);
+
+
+//Zonas
+void mostrarTodasLasPilasDeZonas(tLista* lisZonas);
+void mostrarUnaZona(void *datoZona, void *extra);
+
+//Fin Jornada
+int mostrarResultadoJornada(tJornada *jor, int razon);
+// Historial de jornada puede que no este terminado si hay que aregar algo
+int archivoFinJornada(tJornada *jor);
 
 #endif // JORNADA_H_INCLUDED

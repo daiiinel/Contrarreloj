@@ -3,46 +3,52 @@
 
 #include "constantes.h"
 #include "archivos.h"
-#include "TDA/ListaDinamica.h"
-#include "TDA/pila_dinamica.h"
-#include "TDA/colaDinamica.h"
+#include "operadores.h"
 
-#define TAM_NOMBRE     5
+#include "TDA/pila_dinamica.h"
+#include "TDA/ListaDinamica.h"
+#include "TDA/abb.h"
+
+//#define FIN_JORNADA 8
+#define BLOQUE_OPERATIVO 9
+#define SIN_TIEMPO 10
+#define SIGUE 11
 
 typedef struct jornada
 {
-    char nomBuque[TAM_NOMBRE];
+    char nomBuque[MAX_NOMBRE_BUQUE];
     unsigned tiempoLlegada;
-    tPila* contenedores;
+    tPila contenedores;
 }tBuque;
 
 tPila* tBuqueVerPila(tBuque* pBuque);
 
 typedef struct
 {
-    char nom[TAM_NOMBRE];
+    char nom[MAX_NOMBRE_MUELLE];
     tBuque* buque;
     bool estado; /// 0 libre ; 1 ocupado
 }tMuelle;
 
+typedef struct
+{
+    char num[MAX_NOMBRE_CAMION];
+    unsigned tiempoLlegada;
+    char pedido[MAX_NOMBRE_ZONA];// una estructura de contenedor??
+    bool atendido; // 0 no atendido ;   1 atendido
+}tCamiones;
+//los camiones vienen en cola
+
+
 tBuque* tMuelleVerBuque(tMuelle* muelle);
 
-typedef struct
-{
-    char num[TAM_NOMBRE];
-    unsigned tiempoLlegada;
-    char pedido[5];// una estructura de contenedor??
-    bool atendido;
-    //tContenedor pedido;
-}tCamiones;
-// cola
 
 typedef struct
 {
-    char nom[TAM_NOMBRE];
+    char nom[MAX_NOMBRE_ZONA];
     unsigned capacidad;
     unsigned cantContenedores;
-    tPila* contenedores;
+    tPila contenedores;
 }tZona;
 
 tPila* tZonaVerPila(tZona* pZona);
@@ -52,28 +58,27 @@ tPila* tZonaVerPila(tZona* pZona);
 
 typedef struct
 {
-    char id[TAM_NOMBRE];
+    char id[MAX_NOMBRE_CONT];
 }tContenedor;
 
 
 //Para la "gestion de datos"?
 //Uno para el archivo de operadores y el otro para el archivo de jornadas
-typedef struct
-{
-    char *nom;
-    unsigned cantMov,
-             puntuacion;
-
-}tEstadisticasOperadores;
+//typedef struct
+//{
+//    char nomOperador[MAX_NOMBRE_OP];
+//    unsigned cantMov,
+//             puntuacion;
+//
+//}tEstadisticasOperadores;
 typedef struct
 {
     unsigned numJornada;
-    char *nomOperador;
+    char nomOperador[MAX_NOMBRE_OP];
     unsigned puntuacionObtenida,
-             movimientosRealizados;
+             movimientosRealizados, cantMov;
 }tEstadisticaJornada;
 
-//se lo paso a pedro
 typedef struct
 {
     char operador[MAX_NOMBRE_OP];
@@ -83,17 +88,46 @@ typedef struct
     tLista lMuelles;
     tCola cBuques;
     tCola cCamiones;
+    tCola buquesEnTiempo;
+    tCola camionesEnTiempo;
     tLista lZonas;
-    tCola cCamionesEnEsp;
-    tCola cBuquesEnEsp;
 }tJornada;
 
-/// para ver el primer u segundo camion bajamos el primero a camionActual y solo vemos el camion primero
-
-
+//typedef struct
+//{
+//    char nomre[4];
+//    unsigned tiempoAConsumir;
+//    char org[3];
+//    char des[3];
+//}tComando;
 
 // habria que pasar, camiones, muelles,
-int nuevaJornada(const char* nomOperador); //propuesta por ahora
+int nuevaJornada(tEstadisticasOperadores*datosOperador, tJornada *jor);
 
+int bajarPuertoTxt(tJornada*jor);
+
+//Jornada
+int desarrolloJornada(tJornada* jor);
+void verKPrimeros(tCola* camionesEspera);
+int estadoDeJornada(tJornada *jor);
+
+//Arrivos
+int procesarArrivos(tJornada *jor);
+int arrivoCamiones(tJornada* jor);
+int arrivoBuques(tJornada* jor);
+int acercarBuques(tJornada* jor);
+int cmpMuelleLibre(const void* reg1, const void* estado);
+int cmpMuelleNom(const void* reg1,const void* reg2);
+void actualizarMuelleMartu(void* viejo, void* nuevo);
+
+
+//Zonas
+void mostrarTodasLasPilasDeZonas(tLista* lisZonas);
+void mostrarUnaZona(void *datoZona, void *extra);
+
+//Fin Jornada
+int mostrarResultadoJornada(tJornada *jor, int razon);
+// Historial de jornada puede que no este terminado si hay que aregar algo
+int archivoFinJornada(tJornada *jor);
 
 #endif // JORNADA_H_INCLUDED

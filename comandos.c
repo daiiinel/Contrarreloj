@@ -154,6 +154,7 @@ int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada)
     {
         return TODO_OK;
     }
+
 }
 
 int operacionDES(tMuelle* muelle,tZona* zona)
@@ -253,12 +254,12 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
         return ERROR_COMANDO;
     }
 
-    if(validarENT(&jornada->lZonas,&jornada->cCamionesEnEsp,&zona))
+    if(validarENT(&jornada->lZonas,&jornada->camionesEnTiempo,&zona))
     {
         return ERROR_ARCH;
     }
 
-    operacionENT(&zona,&jornada->cCamionesEnEsp);
+    operacionENT(&zona,&jornada->camionesEnTiempo);
     zona.cantContenedores--;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
 

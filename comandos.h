@@ -47,7 +47,7 @@ typedef struct
 
 int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos);
 
-int cargarComandos(tParametros* param);
+int cargarListaComandos(tLista* pList,tParametros* param);
 int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* comandos);
 
 int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando);

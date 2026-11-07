@@ -3,14 +3,14 @@
 void copiarCadenaAMayus(char* destino,char* origen);
 void aMayusCadena(char* cadena);
 
-int cargarVectorComandos(tLista* pList,tParametros* param)
+int cargarListaComandos(tLista* pList,tParametros* param)
 {
     int codRet=0,cantComandos,i=0;
     tComando listComandos[] =
     {
         {DES,CANT_ARG_OP,param->tiempoDescargaCont,procesarComandoDES},
         {REU,CANT_ARG_OP,param->tiempoReubicacion,procesarComandoREU},
-        {ENT,CANT_ARG_OP,param->tiempoCargaCamion,NULL},
+        {ENT,CANT_ARG_OP,param->tiempoCargaCamion,procesarComandoENT},
         {ESP,CANT_ARG_COM,TIEMPO_ESP,NULL},
         {VER,CANT_ARG_COM,0,NULL}
 

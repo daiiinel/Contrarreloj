@@ -5,7 +5,7 @@
 
 #include "nodo.h"
 
-#define VACIO -1
+//#define VACIO -1
 #define ERROR_ARCHIVO -1
 //#define NO_EXISTE -1
 

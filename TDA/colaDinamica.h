@@ -4,7 +4,6 @@
 #include "nodo.h"
 #include "../constantes.h"
 
-#define COLA_VACIA 1
 typedef struct
 {
     tNodo *pri,

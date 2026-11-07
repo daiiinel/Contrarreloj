@@ -15,6 +15,8 @@ void tListaCrear(tLista* pList);
 void tListaVaciar(tLista* pList);
 void tListaRecorrer(tLista* pList,Accion accion,void* param);
 void tListaMostrar(tLista* pList,Print print);
+int tListaEncontrar(tLista* plista, void* dato, void* refe,unsigned tam, Cmp cmp);
+int tListaEncontrarHacer(tLista* plista, void* dato, unsigned tam, Cmp cmp, Accion accion);
 
 int tListaInsertarAlFinal(tLista* pList,const void* elem,unsigned tamElem);
 int tListaInsertarEnPos(tLista *pList,const void* elem,unsigned tamElem,unsigned pos);

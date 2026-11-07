@@ -300,6 +300,20 @@ void tListaIntercambiarDatoNodo(tLista* pList1,tLista* pList2)
     (*pList2)->tam = auxTamDato;
 }
 
+int tListaEncontrar(tLista* plista, void* dato, void* refe,unsigned tam, Cmp cmp)
+{
+    unsigned flag=0;
+    while(*plista && flag==0)
+    {
+        if((cmp((*plista)->info, refe))==1)
+        {
+            memcpy(dato, (*plista), MIN(tam,(*plista)->tam));
+            flag=1;
+        }
+        plista=&(*plista)->sig;
+    }
+    return flag;
+}
 
 void* tListaBuscarPorPos(tLista* pl, unsigned pos)
 {
@@ -312,4 +326,19 @@ void* tListaBuscarPorPos(tLista* pl, unsigned pos)
     }
 
     return *pl==NULL ? NULL:(*pl)->info;
+}
+
+int tListaEncontrarHacer(tLista* plista, void* dato,unsigned tam, Cmp cmp, Accion accion)
+{
+    unsigned flag=0;
+    while(*plista && flag==0)
+    {
+        if((cmp((*plista)->info, dato))==0)
+        {
+            accion((*plista)->info,dato);
+            flag=1;
+        }
+        plista=&(*plista)->sig;
+    }
+    return flag;
 }

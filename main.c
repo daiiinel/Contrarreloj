@@ -29,7 +29,7 @@ verNPrimeros(tCola *pc, unsigned n) una copia de la cola
 
 */
 
-//aux'spara ver que si se guardan los .bin y .idx¿
+//aux'spara ver que si se guardan los .bin y .idxï¿½
 void verBinIdx(const char*nArch);
 void verBinOp(const char*nArch);
 
@@ -74,11 +74,7 @@ int main()
                         puts(MSG_NO_SIMULABLE);
                         break;
                     }
-
-
-                    //tengo que bajar lo del minuto 0 ? yo o dai
-                    //pregunto por el movimiento se lo pido al pibe
-
+                    desarrolloJornada(&jornada);
                 break;
             case 2:
                 //verRanking(); //--prox en operadores.h (persistencia de datos)

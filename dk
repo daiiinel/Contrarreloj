@@ -1,0 +1,25 @@
+* [33m6345b38[m[33m ([m[1;31morigin/dev-Martu[m[33m)[m seteo de jornada3
+* [33ma39ccfe[m seteo de jornada2
+* [33md4f12e3[m seteo de jornada
+*   [33m418e7d2[m nada
+[32m|[m[33m\[m  
+[32m|[m *   [33m8f55681[m Merge pull request #2 from daiiinel/dev-Pedro
+[32m|[m [34m|[m[35m\[m  
+[32m|[m [34m|[m *   [33m19f5acc[m[33m ([m[1;31morigin/dev-Pedro[m[33m)[m minidetalles para merge
+[32m|[m [34m|[m [36m|[m[34m\[m  
+[32m|[m [34m|[m [36m|[m[34m/[m  
+[32m|[m [34m|[m[34m/[m[36m|[m   
+[32m|[m * [36m|[m   [33m087e823[m Merge pull request #1 from daiiinel/dev-Dai
+[32m|[m [1;32m|[m[1;33m\[m [36m\[m  
+[32m|[m [1;32m|[m * [36m|[m [33m06794c6[m[33m ([m[1;31morigin/dev-Dai[m[33m, [m[1;32mdev-Dai[m[33m)[m implementación de randAlterado()
+[32m|[m [1;32m|[m * [36m|[m [33m1d1fafd[m Optimización de generación de archivos
+[32m|[m [1;32m|[m [1;33m|[m * [33m7c55783[m Se aniadio TDAListaDinamica y TDAVector - -Se define funciones en comandos.h - -Se realiza pseudocodigo en comandos.c - -Se agregan puneros a funciones a constantes.h -
+[32m|[m [1;32m|[m [1;33m|[m[1;33m/[m  
+* [1;32m|[m [1;33m/[m [33mc83f22f[m nada
+[1;33m|[m [1;32m|[m[1;33m/[m  
+[1;33m|[m[1;33m/[m[1;32m|[m   
+* [1;32m|[m [33m2f0f5f1[m comentarios
+* [1;32m|[m [33m2085375[m Tiene: implementacion de cola dinamica, cuestiones de jornada, inicio de muelles, logica
+[1;32m|[m[1;32m/[m  
+* [33m3a418df[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev-Martu[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m generacion inicial de puerto.txt e implementacion de pila_dinamica
+* [33m4ffa582[m estructura base

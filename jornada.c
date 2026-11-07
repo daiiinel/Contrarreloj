@@ -92,7 +92,7 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor)
     {
         sprintf(auxZona.nom, "Z%d", i);
         auxZona.capacidad=param.capPila;
-        crearPila(&auxZona.contenedores);
+        crearPila(&(auxZona.contenedores));
         if(tListaInsertarAlFinal(&lZonas,&auxZona,sizeof(tZona))!= TODO_OK)
              return NO_SIMULABLE;
         i++;
@@ -173,6 +173,7 @@ int desarrolloJornada(tJornada* jor)
 //&& hayBloque()==TODO_OK (dentro del while)
     while((estado=estadoDeJornada(jor))==SIGUE)
     {
+        puts("toy en el while wiiii");
 
 /*       if(validarComandoa(&cm, jornadam, &listaMoviento))todo ok;
         else
@@ -271,7 +272,7 @@ int acercarBuques(tJornada* jor)
             *nuevoBuque=auxBuque;
             auxMuelle->buque=nuevoBuque;
             auxMuelle->estado=1;
-            tListaEncontrarHacer(&(jor->lMuelles),auxMuelle,TAM_MUELLE,cmpMuelleNom,actualizarMuelle);
+            tListaEncontrarHacer(&(jor->lMuelles),auxMuelle,TAM_MUELLE,cmpMuelleNom,actualizarMuelleMartu);
         }else// no hay muelles libres de momento
             break;
     }
@@ -279,7 +280,9 @@ int acercarBuques(tJornada* jor)
     return TODO_OK;
 }
 
-void actualizarMuelle(void* viejo,void* nuevo)
+
+//funcion de martu, de ultima puede llamarse actualizarMuelleBqque¿ o nose
+void actualizarMuelleMartu(void* viejo,void* nuevo)
 {
     tMuelle *vie=(tMuelle*)viejo, *nue=(tMuelle*)nuevo;
     nue->buque=vie->buque;
@@ -505,3 +508,16 @@ int bajarPuertoTxt(tJornada*jor)
 
 
 
+tBuque* tMuelleVerBuque(tMuelle* muelle)
+{
+    return muelle->buque;
+}
+tPila* tBuqueVerPila(tBuque* pBuque)
+{
+    return &(pBuque->contenedores);
+}
+
+tPila* tZonaVerPila(tZona* pZona)
+{
+    return &(pZona->contenedores);
+}

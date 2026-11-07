@@ -21,6 +21,8 @@ typedef struct jornada
     tPila contenedores;
 }tBuque;
 
+tPila* tBuqueVerPila(tBuque* pBuque);
+
 typedef struct
 {
     char nom[MAX_NOMBRE_MUELLE];
@@ -36,17 +38,31 @@ typedef struct
     bool atendido; // 0 no atendido ;   1 atendido
 }tCamiones;
 //los camiones vienen en cola
+
+
+tBuque* tMuelleVerBuque(tMuelle* muelle);
+
+
 typedef struct
 {
     char nom[MAX_NOMBRE_ZONA];
     unsigned capacidad;
+    unsigned cantContenedores;
     tPila contenedores;
 }tZona;
 
+tPila* tZonaVerPila(tZona* pZona);
 
 // bajo los camiones yo, de puerto.txt que dai trae generado
 // hago una cola de camiones
 
+typedef struct
+{
+    char id[MAX_NOMBRE_CONT];
+}tContenedor;
+
+
+//Para la "gestion de datos"?
 //Uno para el archivo de operadores y el otro para el archivo de jornadas
 //typedef struct
 //{
@@ -77,13 +93,13 @@ typedef struct
     tLista lZonas;
 }tJornada;
 
-typedef struct
-{
-    char nomre[4];
-    unsigned tiempoAConsumir;
-    char org[3];
-    char des[3];
-}tComando;
+//typedef struct
+//{
+//    char nomre[4];
+//    unsigned tiempoAConsumir;
+//    char org[3];
+//    char des[3];
+//}tComando;
 
 // habria que pasar, camiones, muelles,
 int nuevaJornada(tEstadisticasOperadores*datosOperador, tJornada *jor);
@@ -102,7 +118,7 @@ int arrivoBuques(tJornada* jor);
 int acercarBuques(tJornada* jor);
 int cmpMuelleLibre(const void* reg1, const void* estado);
 int cmpMuelleNom(const void* reg1,const void* reg2);
-void actualizarMuelle(void* viejo, void* nuevo);
+void actualizarMuelleMartu(void* viejo, void* nuevo);
 
 
 //Zonas

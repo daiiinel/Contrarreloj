@@ -19,6 +19,20 @@ void tListaVaciar(tLista* pList)
     }
 }
 
+int tListaVacia(tLista* pList)
+{
+    return *pList == NULL;
+}
+
+int tListaLlena(tLista* pList,unsigned tamElem)
+{
+    tNodo* nueNodo = (tNodo*)malloc(sizeof(tNodo));
+    void* nueinfo = malloc(tamElem);
+    free(nueinfo);
+    free(nueNodo);
+    return nueNodo == NULL || nueinfo == NULL;
+}
+
 void tListaRecorrer(tLista* pList,Accion accion,void* param)
 {
     while(*pList)
@@ -250,6 +264,18 @@ int tListaSacarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp)
     return TODO_OK;
 }
 
+void* tListaBuscarPorPos(tLista *pList,unsigned pos)
+{
+    unsigned i = 0;
+    while(*pList && i < pos)
+    {
+        pList = &(*pList)->sig;
+        i++;
+    }
+
+    return *pList == NULL? NULL:(*pList)->info;
+}
+
 int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar)
 {
     tNodo* elim;
@@ -287,6 +313,25 @@ int tListaOrdEliminarDupli(tLista* pList,Cmp cmp,Actualizar actualizar)
     return TODO_OK;
 }
 
+int tListaBuscarElemOrd(tLista* pList,void* elem,unsigned tamElem,Cmp cmp)
+{
+    int pos=0;
+    while(*pList != NULL && cmp(elem,(*pList)->info))
+    {
+        pList = &(*pList)->sig;
+        pos++;
+    }
+
+    if(*pList == NULL)
+    {
+        return NO_EXISTE;
+    }
+
+    memcpy(elem,(*pList)->info,MIN(tamElem,(*pList)->tam));
+
+    return pos;
+}
+
 void tListaIntercambiarDatoNodo(tLista* pList1,tLista* pList2)
 {
     unsigned auxTamDato;
@@ -315,18 +360,6 @@ int tListaEncontrar(tLista* plista, void* dato, void* refe,unsigned tam, Cmp cmp
     return flag;
 }
 
-void* tListaBuscarPorPos(tLista* pl, unsigned pos)
-{
-    unsigned i=1;
-
-    while(*pl && i<pos)
-    {
-        pl = &(*pl)->sig;
-        i++;
-    }
-
-    return *pl==NULL ? NULL:(*pl)->info;
-}
 
 int tListaEncontrarHacer(tLista* plista, void* dato,unsigned tam, Cmp cmp, Accion accion)
 {

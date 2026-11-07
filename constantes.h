@@ -9,6 +9,7 @@
 
 //FUNCIONES MACRO
 #define MIN(X,Y) ((X)<=(Y)? (X):(Y))
+#define A_MAYUSCULA(c) (((c) >= 'a' && (c) <= 'z') ? ((c) - 32) : (c))
 
 //printsf
 #define MENU_INICIO "\n\t --- Puerto de contenedores - Operacion Contrarreloj --- \n" \
@@ -46,6 +47,7 @@
 #define MAX_NOMBRE_CONT     5
 #define MAX_NOMBRE_BUQUE    5
 #define MAX_NOMBRE_CAMION   5
+#define MAX_NOMBRE_CONT     5
 
 //tamaños
 #define TAM_LINEA           100
@@ -68,7 +70,7 @@
 typedef int(*Cmp)(const void* a,const void* b);
 typedef void(*Accion)(void* info,void* param);
 typedef void(*Print)(const void* info);
-typedef int(*Actualizar)(void* actualizado,const void* actualizador);
+typedef void(*Actualizar)(void* actualizado,const void* actualizador);
 
 
 #endif // CONSTANTES_H_INCLUDED

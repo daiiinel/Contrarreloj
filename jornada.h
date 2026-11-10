@@ -126,7 +126,7 @@ void mostrarUnaZona(void *datoZona, void *extra);
 int mostrarResultadoJornada(tJornada *jor, int razon);
 // Historial de jornada puede que no este terminado si hay que aregar algo
 int archivoFinJornada(tJornada *jor);
-int archivoOperadores(tJornada *jor)
+int archivoOperadores(tJornada *jor);
 
 
 #endif // JORNADA_H_INCLUDED

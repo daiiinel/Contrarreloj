@@ -317,7 +317,7 @@ void procesarComandoVER(char* argv[],tJornada *pJornada,const struct tComando* c
 void procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando)
 {
     pJornada->tiempo++;
-    //avanceAutomatico(pJornada);
+    avanceAutomatico(pJornada);
 }
 
 

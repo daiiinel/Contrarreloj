@@ -133,13 +133,10 @@ int desarrolloJornada(tJornada* jor, tParametros *param)
 
     printf("---------Inicio de una nueva jornada---------\n");
 
-//&& hayBloque()==TODO_OK (dentro del while)
     while((estado=estadoDeJornada(jor, comandos))==SIGUE)
     {
         printf("Tiempo: %d\n", jor->tiempo);
-        printf("antes");
         verPrimeros(jor);
-        printf("depsues");
         ejecutarComandoOperacion(jor, &comandos);
 
 
@@ -149,7 +146,7 @@ int desarrolloJornada(tJornada* jor, tParametros *param)
     }
 
     if(verPrimeroEnCola(&(jor->camionesEnTiempo), &cam, TAM_CAMION)!=VACIO)
-    {   
+    {
         pena=contarPuntajeNegativo(&(jor->camionesEnTiempo));
         jor->puntaje-=(pena*PUNTAJE_PENALIZADOR);
     }
@@ -172,12 +169,6 @@ void mostrarBuque(void* dato)
 
     system("pause");
 }
-// quiero ver la carga del tope del buque
-
-// podria necesita el tiempo del movimiento asi puedo ver si esta en el medio
-// si esta en medio avanzo el tiempo yo hasta el arrivo y lo hago y que avance hasta el tiempo de finalizar?
-// si no esta en el medio que simplemente avance y hace el arrivo
-
 int estadoDeJornada(tJornada *jor, tLista coman)
 {
     if(jor->tiempo >= jor->tiempo_maximo)
@@ -206,7 +197,6 @@ void procesarEnMedio(tJornada* jor, int tiempoUso)
 }
 
 
-/// contar la cantidad de camoines si la cola es difrente de nullo 
 int contarPuntajeNegativo(tCola *colaCamiones)
 {
     tCamiones camion;
@@ -238,7 +228,8 @@ void avanceAutomatico(tJornada *jor)
                 jor->tiempo += (auxCamion.tiempoLlegada - jor->tiempo);
             }
         }
-    }
+    }else if(colaVacia(&(jor->buquesEnTiempo)) && colaVacia(&(jor->camionesEnTiempo)) && colaVacia(&(jor->cBuques)) && colaVacia(&(jor->cCamiones)) && jor->tiempo<jor->tiempo_maximo)
+        jor->tiempo+= (jor->tiempo_maximo - jor->tiempo);
 }
 
 
@@ -254,7 +245,7 @@ int procesarArrivos(tJornada *jor)
     if(jor->tiempo==0)
     {
 
-        if(auxBuque.tiempoLlegada > auxCamion.tiempoLlegada)
+        if(auxBuque.tiempoLlegada < auxCamion.tiempoLlegada)
         {
             arrivoBuques(jor);
             jor->tiempo+=auxBuque.tiempoLlegada;

@@ -110,6 +110,7 @@ int bajarPuertoTxt(tJornada*jor);
 int desarrolloJornada(tJornada* jor);
 void verKPrimeros(tCola* camionesEspera);
 int estadoDeJornada(tJornada *jor);
+int hayBloqueoOperativo(tJornada* jor);
 
 //Arrivos
 int procesarArrivos(tJornada *jor);
@@ -119,15 +120,24 @@ int acercarBuques(tJornada* jor);
 int cmpMuelleLibre(const void* reg1, const void* estado);
 int cmpMuelleNom(const void* reg1,const void* reg2);
 void actualizarMuelleMartu(void* viejo, void* nuevo);
+int hayAtracosDeMuelles(tLista* muelles);
 
 
 //Zonas
 void mostrarTodasLasPilasDeZonas(tLista* lisZonas);
 void mostrarUnaZona(void *datoZona, void *extra);
+int capacidadDeZonas(tLista* zonas);
+
 
 //Fin Jornada
 int mostrarResultadoJornada(tJornada *jor, int razon);
 // Historial de jornada puede que no este terminado si hay que aregar algo
 int archivoFinJornada(tJornada *jor);
+
+void contarEspacioZona(void* info,void* param);
+void muelleEnUso(void* info,void* param);
+int buscarEnPila(tPila *pp,void *elem, unsigned tam,Cmp cmp);
+int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor);
+int cmpContenedor(const void* a,const void* b);
 
 #endif // JORNADA_H_INCLUDED

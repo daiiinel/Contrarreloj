@@ -211,6 +211,40 @@ int estadoDeJornada(tJornada *jor)
     return SIGUE;
 }
 
+int hayBloqueoOperativo(tJornada* jor)
+{
+    int capZonas;
+    int band;
+    tZona auxZona;
+    tCamiones auxCamion;
+    tContenedor auxConte;
+    int pos;
+    capZonas = capacidadDeZonas(&jor->lZonas);
+    band = hayAtracosDeMuelles(&jor->lMuelles);
+    if(band && capZonas != 0)
+    {
+        return TODO_OK;
+    }
+    if(colaVacia(&jor->camionesEnTiempo) && colaVacia(&jor->cCamiones))
+    {
+        return BLOQUE_OPERATIVO;
+    }
+    else
+    {
+        verPrimeroEnCola(&jor->camionesEnTiempo,&auxCamion,sizeof(tCamiones));
+        strcpy(auxConte.id,auxCamion.pedido);
+        if(buscarContenedorEnZonas(&jor->lZonas,&auxZona,&auxConte) < 0)
+        {
+            return BLOQUE_OPERATIVO;
+        }
+        else
+        {
+            pos = buscarEnPila(&auxZona.contenedores,&auxConte,sizeof(tContenedor),cmpContenedor);
+
+        }
+    }
+}
+
 
 int procesarArrivos(tJornada *jor)
 {
@@ -520,4 +554,108 @@ tPila* tBuqueVerPila(tBuque* pBuque)
 tPila* tZonaVerPila(tZona* pZona)
 {
     return &(pZona->contenedores);
+}
+
+void contarEspacioZona(void* info,void* param)
+{
+    tZona* zona = (tZona*)info;
+    int* cont = (int*)param;
+    int cap;
+    cap = zona->capacidad - zona->cantContenedores;
+    *cont += cap;
+}
+
+int capacidadDeZonas(tLista* zonas)
+{
+    int cont=0;
+    tListaRecorrer(zonas,contarEspacioZona, &cont);
+    return cont;
+}
+
+int hayAtracosDeMuelles(tLista* muelles)
+{
+    int band = 0;
+    tListaRecorrer(muelles,muelleEnUso,&band);
+    return band;
+}
+
+void muelleEnUso(void* info,void* param)
+{
+    tMuelle* muelle = (tMuelle*)info;
+    int* band = (int*)param;
+
+    if(muelle->estado)
+    {
+        *band = 1;
+    }
+}
+
+int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
+{
+    int pos = -1, i=0;
+    tPila* pPila;
+    tZona* pZona;
+    pZona = tListaBuscarPorPos(zonas,i);
+
+    while(pZona != NULL && pos == -1)
+    {
+        pPila = tZonaVerPila(pZona);
+        if(buscarEnPila(pPila,contenedor,sizeof(tContenedor),cmpContenedor) < 0)
+        {
+            i++;
+            pZona = tListaBuscarPorPos(zonas,i);
+        }
+        else
+        {
+            pos = i;
+            memcpy(zona,pZona,sizeof(tZona));
+        }
+    }
+    return pos;
+}
+
+int buscarEnPila(tPila *pp,void *info, unsigned tam,Cmp cmp)
+{
+    tPila auxPila;
+    int pos = -1,i=0;
+    void *elem = malloc(tam);
+    if (!elem)
+        return pos;
+
+    crearPila(&auxPila);
+
+    /* vacía la pila original contando antes y después del buscado */
+    while (!pilaVacia(pp) && pos == -1)
+    {
+        desapilar(pp, elem, tam);
+        apilar(&auxPila, elem, tam);
+
+        if(cmp(elem, info) == 0)
+        {
+            pos = i;
+            memcpy(info,elem,tam);
+        }
+        else
+        {
+            i++;
+        }
+    }
+
+    /* restaura la pila original */
+    while (!pilaVacia(&auxPila))
+    {
+        desapilar(&auxPila, elem, tam);
+        apilar(pp, elem, tam);
+    }
+
+    free(elem);
+    return pos;
+}
+
+int cmpContenedor(const void* a,const void* b)
+{
+    const tContenedor* contenedor1 = (const tContenedor*)a;
+    const tContenedor* contenedor2 = (const tContenedor*)b;
+
+    return strcmp(contenedor1->id,contenedor2->id);
 }

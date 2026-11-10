@@ -14,8 +14,8 @@ typedef enum
 #define TAM_COMANDO      4
 #define TAM_ARGUMENTO    5
 #define TAM_ARG          5
-#define CANT_ARG_COM     0
-#define CANT_ARG_OP      2
+#define CANT_ARG_COM     1
+#define CANT_ARG_OP      3
 #define TIEMPO_ESP       1
 
 #define ERROR_INGRESO_COMANDO -1
@@ -47,23 +47,24 @@ typedef struct
 
 int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos);
 
-int cargarComandos(tParametros* param);
+int cargarVectorComandos(tLista* pList,tParametros* param);
 int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* comandos);
 
 int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando);
 int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando);
 int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando);
+void procesarComandoVER(char* argv[],tJornada* pJornada,const struct tComando* comando);
+void procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando);
 
 
 int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada);
 int validarREU(tZona* zona1,tZona* zona2,tJornada* jornada);
 int validarENT(tLista* lZonas,tCola* cCamionesEsp,tZona* zona);
 
-int operacionDES(tMuelle* muelle,tZona* zona);
+int operacionDES(tMuelle* muelle,tZona* zona, tContenedor *cont, tJornada* jornada);
 int operacionREU(tZona* pZona1,tZona* pZona2);
 int operacionENT(tZona* pZona,tCola* pCamiones);
 void comandoESP(tJornada* pJornada);
-void comandoVER(tLista* pZona,tLista* pMuelle,tCola* pCamion,tParametros* pParametros,tJornada* pJornada);
 
 int cmpZona(const void* a,const void* b);
 int cmpMuelle(const void* a,const void* b);

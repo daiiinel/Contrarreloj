@@ -59,10 +59,13 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
 
     printf("OPERADOR> ");
     //Leo el ingreso y agrego '\0'al final de cadena
-    if(fgets(linea,TAM_LINEA+1,stdin) == NULL)
+    do
     {
-        return 1;
-    }
+        if(fgets(linea, TAM_LINEA+1, stdin) == NULL)
+            return 1;
+
+    }while(linea[0] == '\n');
+
     act = strchr(linea,'\n');
     if(act == NULL)
     {
@@ -200,9 +203,9 @@ int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* com
     //en este momento se actualiza
     procesarEnMedio(jornada, comando->tiempoUso);
     jornada->tiempo+= comando->tiempoUso;
-    
+
     operacionREU(&zona1,&zona2);
-    
+
     zona1.cantContenedores--;
     zona2.cantContenedores++;
     jornada->tiempo+=comando->tiempoUso;

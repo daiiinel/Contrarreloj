@@ -39,7 +39,6 @@ typedef struct
 {
     char nomOperador[MAX_NOMBRE_OP];
     unsigned    id,
-                cantMov,
                 puntuacion;
 }tEstadisticasOperadores;
 
@@ -48,6 +47,9 @@ typedef struct
     tLista lNombres;
     unsigned cant;
 }tRepetidos;
+
+
+int actualizarOperador(tEstadisticasOperadores* datosOperador, tArbol*abb);
 
 int buscarOperador(const char* nomOperador, tArbol* abb, FILE* pf, tEstadisticasOperadores* datosOperador);
 int gestionarOperador(char* nomOperador, tArbol*abb, tEstadisticasOperadores*datosOperador);
@@ -64,5 +66,11 @@ long cantidadRegistros(const char* nomArch, unsigned tam);
 int cmpOperadorIdx(const void* a, const void* b);
 int cmpOperadorNombre(const void* a, const void* b);
 void mostrarYEnlistar(void* info, void* param);
+void imprimirOperadorRanking(void* info, void* param);
+
+int verRanking(tArbol* arbolIdx);
+int cmpPorPuntaje(const void* a, const void* b);
+void accionVolcarALista(void* infoNodo, unsigned tamNodo, unsigned nivel, void* params);
+
 
 #endif // OPERADORES_H_INCLUDED

@@ -41,7 +41,7 @@ void mostrarPilaContenedores(tPila* p)
 }
 */
 
-//propuesta/pseudocodigo
+
 int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParametros *param)
 {
     //estructura que contiene datos de puerto.txt y config.txt
@@ -120,7 +120,7 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
 //arrvis de camiones y buques por separado
 //hago el printeo de la jornada finalizada por k razon;
 
-int desarrolloJornada(tJornada* jor, tParametros *param)
+int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores* datosOperador)
 {
     int estado, pena=0;
     tLista comandos;
@@ -153,8 +153,11 @@ int desarrolloJornada(tJornada* jor, tParametros *param)
     printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje, pena);
     system("pause");
    // paso al hstorial del operador, lo hace dai por el arbol
-   archivoFinJornada(jor);
-   //    historialDelOperadores();
+   archivoFinJornada(jor, datosOperador->id);
+
+    datosOperador->puntuacion += jor->puntaje;
+
+
     return TODO_OK;
 }
 /// para ver el tope de la pila del buque en el muelle
@@ -262,7 +265,8 @@ int procesarArrivos(tJornada *jor)
 
         }
     }
-    else{
+    else
+    {
         arrivoCamiones(jor);
         arrivoBuques(jor);
         acercarBuques(jor);
@@ -493,7 +497,7 @@ void mostrarColaBuqesEspera(tCola *colaBuquesEspera)
     }
 }
 
-int archivoFinJornada(tJornada *jor)
+int archivoFinJornada(tJornada *jor, unsigned idOperador)
 {
     FILE *pf=fopen(JORNADA_ARCH,"r+t");
     if(!pf)
@@ -503,12 +507,12 @@ int archivoFinJornada(tJornada *jor)
             return ERROR_ARCH;
         //si entro aca es porque tuvo que crear el archivo entonces no habia nada antes
         fprintf(pf,"\t---------Historial de Jornadas---------\n");
-        fprintf(pf, "%-15s %-10s %-20s %s\n","OPERADOR", "PUNTAJE","CANT. MOVIMIENTOS","TIEMPO FINAL/DISPONIBLE");
+        fprintf(pf, "%-5s %-15s %-10s %s\n", "ID","OPERADOR", "PUNTAJE","TIEMPO FINAL/DISPONIBLE");
     }
     else
         fseek(pf,0,SEEK_END);
 
-    fprintf(pf,"%-15s %-10u %-20d %d/%d\n",jor->operador, jor->puntaje,jor->puntaje,jor->tiempo, jor->tiempo_maximo);
+    fprintf(pf,"%d %-15s %-10u %d/%d\n", idOperador, jor->operador, jor->puntaje,jor->tiempo, jor->tiempo_maximo);
     fclose(pf);
 
     return TODO_OK;

@@ -1,0 +1,12 @@
+	---------Historial de Jornadas---------
+OPERADOR        PUNTAJE    CANT. MOVIMIENTOS    TIEMPO FINAL/DISPONIBLE
+vawecawe        10         10                   30/30
+fwdw            5          5                    25/30
+few             5          5                    25/30
+fw              1          1                    30/30
+fwe             5          5                    27/30
+few             3          3                    31/30
+ewq             0          0                    30/30
+fewa            35         35                   21/30
+few             25         25                   17/30
+dqw             35         35                   23/30

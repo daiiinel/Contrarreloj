@@ -352,7 +352,7 @@ int tListaEncontrar(tLista* plista, void* dato, void* refe,unsigned tam, Cmp cmp
     {
         if((cmp((*plista)->info, refe))==1)
         {
-            memcpy(dato, (*plista), MIN(tam,(*plista)->tam));
+            memcpy(dato, (*plista)->info, MIN(tam,(*plista)->tam));
             flag=1;
         }
         plista=&(*plista)->sig;
@@ -373,5 +373,6 @@ int tListaEncontrarHacer(tLista* plista, void* dato,unsigned tam, Cmp cmp, Accio
         }
         plista=&(*plista)->sig;
     }
+
     return flag;
 }

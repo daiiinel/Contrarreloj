@@ -39,6 +39,8 @@ int main()
     char nombreOperador[MAX_NOMBRE_OP];
     tJornada jornada;
     tEstadisticasOperadores datosOperador;
+    tParametros param;
+
 
     tArbol arbolIdx; //para la persistencia de datos
 
@@ -69,12 +71,12 @@ int main()
                         break;
                     }
 
-                    if(nuevaJornada(&datosOperador, &jornada)==NO_SIMULABLE)
+                    if(nuevaJornada(&datosOperador, &jornada, &param)==NO_SIMULABLE)
                     {
                         puts(MSG_NO_SIMULABLE);
                         break;
                     }
-                    desarrolloJornada(&jornada);
+                    desarrolloJornada(&jornada, &param);
                 break;
             case 2:
                 //verRanking(); //--prox en operadores.h (persistencia de datos)

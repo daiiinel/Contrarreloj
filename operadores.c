@@ -131,7 +131,7 @@ int seleccionaOperador(tEstadisticasOperadores* datosOperador, tRepetidos* encon
     if(opcion==encontrados->cant+1)
         return NO_EXISTE;
 
-    operadorElegido= (tOperadorIdx*)tListaBuscarPorPos(&(encontrados->lNombres), opcion);
+    operadorElegido= (tOperadorIdx*)tListaBuscarPorPos(&(encontrados->lNombres), opcion-1);
 
     if(!operadorElegido)
         return NO_EXISTE;

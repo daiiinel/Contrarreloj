@@ -20,6 +20,12 @@ int validaConfigYGeneraPuerto(tParametros * param)
     cargarParametros(param, pConf);
 
     //casos insimulabless
+    if(param->minJornada <= 0 || param->cantMuelle <= 0 || param->cantZona <= 0 ||
+       param->capPila <= 0 || param->maxBuques <= 0 || param->maxContPorBuques <= 0 ||
+       param->maxCamiones <= 0 || param->tiempoDescargaCont <= 0 ||
+       param->tiempoReubicacion <= 0 || param->tiempoCargaCamion <= 0)
+        return NO_SIMULABLE;
+
     if(param->maxCamiones > param->maxBuques * param->maxContPorBuques)
         return NO_SIMULABLE;
 

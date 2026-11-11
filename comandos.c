@@ -29,7 +29,7 @@ int cargarVectorComandos(tLista* pList,tParametros* param)
     return TODO_OK;
 }
 
-int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos)
+int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos,tLista* historial)
 {
     char linea[TAM_LINEA];
     char* argumentos[TAM_ARG];
@@ -44,7 +44,7 @@ int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos)
     //utilizo el puntero a funcion de la estructura
     procesarEnMedio(jornada, comando.tiempoUso);
     //Esta funcion se encarga de validar y ejecutar el comando
-    comando.procesarComando(argumentos,jornada,&comando);
+    comando.procesarComando(argumentos,jornada,&comando,historial);
 
 
 
@@ -101,11 +101,11 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
     return TODO_OK;
 }
 
-int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando)
+int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando,tLista* historial)
 {
     tMuelle muelle;
     tZona zona;
-    tContenedor cont;
+    tContenedor conte;
     if(validarTiempo(jornada,comando->tiempoUso))
     {
         puts("Tiempo insuficiente");
@@ -121,14 +121,16 @@ int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* com
 
     //Si hay un evento en el medio antes de que termine la operacion
     //en este momento se actualiza
+    procesarEnMedio(jornada, comando->tiempoUso);
 
-    operacionDES(&muelle,&zona, &cont, jornada);
+    operacionDES(&muelle,&zona, &conte, jornada);
+    guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
+
     //actualizo puntos
     zona.cantContenedores++;
     jornada->tiempo+=comando->tiempoUso;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
-    tListaInsertarOrdConDupli(&jornada->lMuelles,&muelle,sizeof(tMuelle),cmpMuelle,actualizarMuelle);
-
+   // tListaInsertarOrdConDupli(&jornada->lMuelles,&muelle,sizeof(tMuelle),cmpMuelle,actualizarMuelle);
 
     return TODO_OK;
 }
@@ -183,10 +185,11 @@ int operacionDES(tMuelle* muelle,tZona* zona,  tContenedor* cont, tJornada* jor)
     return TODO_OK;
 }
 
-int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando)
+int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando,tLista* historial)
 {
     tZona zona1;
     tZona zona2;
+    tContenedor conte;
     if(validarTiempo(jornada,comando->tiempoUso))
     {
         puts("Tiempo insuficiente");
@@ -202,9 +205,11 @@ int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* com
     //Si hay un evento en el medio antes de que termine la operacion
     //en este momento se actualiza
     procesarEnMedio(jornada, comando->tiempoUso);
-    jornada->tiempo+= comando->tiempoUso;
+    //jornada->tiempo+= comando->tiempoUso;
 
-    operacionREU(&zona1,&zona2);
+    operacionREU(&zona1,&zona2,&conte);
+    guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
+
 
     zona1.cantContenedores--;
     zona2.cantContenedores++;
@@ -240,28 +245,28 @@ int validarREU(tZona* zona1,tZona* zona2,tJornada* jornada)
     {
         puts("Zona destino sin espacio");
         return ERROR_ARCH;
-    }else
-    {
-        return TODO_OK;
     }
-}
-
-int operacionREU(tZona* pZona1,tZona* pZona2)
-{
-    tPila* pilaZona1,*pilaZona2;
-    tContenedor auxContenedor;
-    pilaZona1 = tZonaVerPila(pZona1);
-    pilaZona2 = tZonaVerPila(pZona2);
-
-    desapilar(pilaZona1,&auxContenedor,sizeof(tContenedor));
-    apilar(pilaZona2,&auxContenedor,sizeof(tContenedor));
 
     return TODO_OK;
 }
 
-int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando)
+int operacionREU(tZona* pZona1,tZona* pZona2,tContenedor* conte)
+{
+    tPila* pilaZona1,*pilaZona2;
+    pilaZona1 = tZonaVerPila(pZona1);
+    pilaZona2 = tZonaVerPila(pZona2);
+
+    desapilar(pilaZona1,conte,sizeof(tContenedor));
+    apilar(pilaZona2,conte,sizeof(tContenedor));
+
+    return TODO_OK;
+}
+
+int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando,tLista* historial)
 {
     tZona zona;
+    tCamiones camion;
+    tContenedor conte;
     if(validarTiempo(jornada,comando->tiempoUso))
     {
         puts("Tiempo insuficiente");
@@ -273,8 +278,8 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
         return ERROR_ARCH;
     }
     procesarEnMedio(jornada, comando->tiempoUso);
-    jornada->tiempo+= comando->tiempoUso;
-    operacionENT(&zona,&jornada->camionesEnTiempo);
+    operacionENT(&zona,&camion,&conte,&jornada->camionesEnTiempo);
+    guardarComando(argv[nomArg],zona.nom,camion.num,conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
     zona.cantContenedores--;
     jornada->tiempo+=comando->tiempoUso;
     jornada->puntaje+=PUNTAJE_ENTRGA;
@@ -301,18 +306,17 @@ int validarENT(tLista* lZonas,tCola* cCamionesEsp,tZona* zona)
     return TODO_OK;
 }
 
-int operacionENT(tZona* pZona,tCola* pCamiones)
+int operacionENT(tZona* pZona,tCamiones* camion,tContenedor* conte,tCola* pCamiones)
 {
-    tContenedor elimCont;
-    tCamiones camion;
     tPila* pPila;
     pPila = tZonaVerPila(pZona);
-    desapilar(pPila,&elimCont,sizeof(tContenedor));
-    sacarDeCola(pCamiones,&camion,sizeof(tCamiones));
+
+    desapilar(pPila,conte,sizeof(tContenedor));
+    sacarDeCola(pCamiones,camion,sizeof(tCamiones));
     return TODO_OK;
 }
 
-int procesarComandoVER(char* argv[],tJornada *pJornada,const struct tComando* comando)
+int procesarComandoVER(char* argv[],tJornada* pJornada,const struct tComando* comando,tLista* historial)
 {
     printf("Tiempo: %d / %d \t Puntuacion(de momento): %d", pJornada->tiempo, pJornada->tiempo_maximo, pJornada->puntaje);
     verKPrimeros(&(pJornada->camionesEnTiempo));
@@ -320,9 +324,11 @@ int procesarComandoVER(char* argv[],tJornada *pJornada,const struct tComando* co
     mostrarTodasLasPilasDeZonas(&(pJornada->lZonas));
     return TODO_OK;
 }
-int procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando)
+int procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando,tLista* historial)
 {
     pJornada->tiempo++;
+    guardarComando(argv[nomArg],"","","",pJornada->tiempo-comando->tiempoUso,pJornada->tiempo,historial);
+
     avanceAutomatico(pJornada);
     return TODO_OK;
 }
@@ -371,7 +377,20 @@ void actualizarMuelle(void* actualizado,const void* actualizador)
 int validarTiempo(const tJornada* jornada,const int tiempoAgregado)
 {
     int nueTiempo = tiempoAgregado + jornada->tiempo;
-    return jornada->tiempo_maximo <= nueTiempo;
+    return jornada->tiempo_maximo < nueTiempo;
+}
+
+void guardarComando(const char* nom,char*orig,char*dest,char*conte,int ini,int fin,tLista* historial)
+{
+    tHistoriaComando hist;
+    strcpy(hist.codComando,nom);
+    strcpy(hist.origen,orig);
+    strcpy(hist.destino,dest);
+    strcpy(hist.contenedor,conte);
+    hist.tiempoInicio = ini;
+    hist.tiempoFinal = fin;
+
+    tListaInsertarAlFinal(historial,&hist,sizeof(tHistoriaComando));
 }
 
 int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
@@ -408,7 +427,7 @@ int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
 void copiarCadenaAMayus(char* destino,char* origen)
 {
     aMayusCadena(origen);
-    strncpy(destino,origen,sizeof(TAM_ARG));
+    strncpy(destino,origen,sizeof(TAM_ARGUMENTO));
     *(destino + TAM_ARG-1) = '\0';
 }
 

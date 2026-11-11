@@ -41,6 +41,7 @@ int main()
     tEstadisticasOperadores datosOperador;
     tParametros param;
 
+
     tArbol arbolIdx; //para la persistencia de datos
 
     crearArbol(&arbolIdx);

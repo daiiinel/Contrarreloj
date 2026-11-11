@@ -118,4 +118,15 @@ int archivoFinJornada(tJornada *jor, unsigned idOperador);
 int archivoOperadores(tJornada *jor);
 
 
+int capacidadDeZonas(tLista* zonas);
+int hayBloqueoOperativo(tJornada* jor);
+void contarEspacioZona(void* info,void* param);
+void muelleEnUso(void* info,void* param);
+int buscarEnPila(tPila *pp,void *elem, unsigned tam,Cmp cmp);
+int buscarContenedorEspEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor);
+int cmpContenedor(const void* a,const void* b);
+int bloqueoPorENT(tJornada* jor,int capZonas);
+int bloqueoPorDES(tJornada* jor,int capZonas);
+
+
 #endif // JORNADA_H_INCLUDED

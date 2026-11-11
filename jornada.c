@@ -67,6 +67,7 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
     jor->tiempo=0;
     jor->tiempo_maximo= param->minJornada;
     jor->puntaje=0;
+    jor->contenedoresEntregados = jor->cantBuquesDescargados;
     jor->lMuelles= lMuelles;
     jor->cCamiones= cCamiones;
     jor->buquesEnTiempo= buquesEnTiempo;
@@ -103,7 +104,7 @@ int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores
         printf("Tiempo: %d\n", jor->tiempo);
         verPrimeros(jor);
         ejecutarComandoOperacion(jor, &comandos,&historial);
-        //tListaMostrar(&historial,printHistoria);
+
         system("pause");
         system("cls");
     }
@@ -113,9 +114,11 @@ int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores
         pena=contarPuntajeNegativo(&(jor->camionesEnTiempo));
         jor->puntaje-=(pena*PUNTAJE_PENALIZADOR);
     }
-    printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje, pena);
+    printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje, pena,
+           jor->contenedoresEntregados, jor->cantBuquesDescargados);
     system("pause");
    // paso al hstorial del operador, lo hace dai por el arbol
+   tListaMostrar(&historial,printHistoria);
    archivoFinJornada(jor, datosOperador->id);
 
     datosOperador->puntuacion += jor->puntaje;
@@ -742,6 +745,8 @@ int bloqueoPorDES(tJornada* jor,int capZonas)
 void printHistoria(const void* a)
 {
     const tHistoriaComando* hist = (const tHistoriaComando*)a;
-    printf("Nombre:%4s\nOrigen:%5s\nDestino:%5s\nContenedor:%5s\n",hist->codComando,hist->origen,hist->destino,hist->contenedor);
-    printf("Tiempo Inicio:%d\nTiempo Final:%d\n",hist->tiempoInicio,hist->tiempoFinal);
+    puts("");
+    printf("Nombre:%4s\tOrigen:%5s\tDestino:%5s\tContenedor:%5s\n",hist->codComando,hist->origen,hist->destino,hist->contenedor);
+    printf("Tiempo Inicio:%d\tTiempo Final:%d\n",hist->tiempoInicio,hist->tiempoFinal);
+    puts("");
 }

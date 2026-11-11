@@ -69,6 +69,8 @@ typedef struct
     int tiempo;
     int tiempo_maximo;
     int puntaje;
+    int cantBuquesDescargados;
+    int contenedoresEntregados;
     tLista lMuelles;
     tCola cBuques;
     tCola cCamiones;

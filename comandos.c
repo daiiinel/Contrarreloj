@@ -129,6 +129,7 @@ int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* com
     //actualizo puntos
     zona.cantContenedores++;
     jornada->tiempo+=comando->tiempoUso;
+    jornada->contenedoresEntregados++;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
    // tListaInsertarOrdConDupli(&jornada->lMuelles,&muelle,sizeof(tMuelle),cmpMuelle,actualizarMuelle);
 
@@ -283,6 +284,7 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
     zona.cantContenedores--;
     jornada->tiempo+=comando->tiempoUso;
     jornada->puntaje+=PUNTAJE_ENTRGA;
+    jornada->contenedoresEntregados++;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
 
     return TODO_OK;

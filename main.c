@@ -1,9 +1,6 @@
 #include "constantes.h"
 #include "jornada.h"
 
-void verBinIdx(const char*nArch);
-void verBinOp(const char*nArch);
-
 int main()
 {
     int opc,c;
@@ -66,44 +63,13 @@ int main()
                 system("pause");
                 break;
         }
-//        verBinIdx(IDX_OPERADORES_ARCH);
-//        verBinOp(OPERADORES_ARCH);
+
 
          system("pause");
         system("cls");
 
     }while(opc!=3);
 
-
     vaciarArbol(&arbolIdx);
     return 0;
-}
-
-
-void verBinIdx(const char*nArch)
-{
-    FILE*pf=fopen(nArch, "rb");
-    if(!pf)
-        return;
-
-    tOperadorIdx reg;
-
-    while(fread(&reg, sizeof(tOperadorIdx),1,pf ))
-        printf("%u - %s - %u\n", reg.id, reg.nombre, reg.pos);
-
-    fclose(pf);
-}
-
-void verBinOp(const char*nArch)
-{
-    FILE*pf=fopen(nArch, "rb");
-    if(!pf)
-        return;
-
-    tEstadisticasOperadores reg;
-
-    while(fread(&reg, sizeof(tEstadisticasOperadores),1,pf ))
-        printf("%u - %s - %u \n", reg.id, reg.nomOperador, reg.puntuacion);
-
-    fclose(pf);
 }

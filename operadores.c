@@ -7,7 +7,7 @@ int actualizarOperador(tEstadisticasOperadores* datosOperador, tArbol*abb)
     if(!pf)
     {
         if(!(pf=fopen(OPERADORES_ARCH, "w+b")))
-            return ERROR_ARCHIVO;
+            return ERROR_ARCH;
     }
 
     tOperadorIdx opIdx;
@@ -244,12 +244,12 @@ long cantidadRegistros(const char* nomArch, unsigned tam)
     long bytes;
 
     if(!pf)
-        return ERROR_ARCHIVO;
+        return ERROR_ARCH;
 
     if(fseek(pf, 0, SEEK_END) != 0)
     {
         fclose(pf);
-        return ERROR_ARCHIVO;
+        return ERROR_ARCH;
     }
 
     bytes= ftell(pf);
@@ -257,7 +257,7 @@ long cantidadRegistros(const char* nomArch, unsigned tam)
     fclose(pf);
 
     if(bytes<0 || bytes%tam!=0)
-        return ERROR_ARCHIVO;
+        return ERROR_ARCH;
 
     return bytes/tam;
 }
@@ -304,7 +304,7 @@ int inicializarIndiceOperadores(tArbol* pa)
     long cantDatos = cantidadRegistros(OPERADORES_ARCH, sizeof(tEstadisticasOperadores));
     long cantIdx = cantidadRegistros(IDX_OPERADORES_ARCH, sizeof(tOperadorIdx));
 
-    if(cantDatos==ERROR_ARCHIVO)//no se contó ningun dato pq no existia el arch¿¿
+    if(cantDatos==ERROR_ARCH)//no se contó ningun dato pq no existia el arch¿¿
     {
         FILE* pf = fopen(OPERADORES_ARCH, "wb");
 
@@ -337,7 +337,7 @@ int cmpOperadorIdx(const void* a, const void* b)
     if (cmp != 0)
         return cmp;
 
-    return (op1->pos > op2->pos) - (op1->pos < op2->pos);
+    return (op1->id > op2->id) - (op1->id < op2->id);
 }
 
 int cmpOperadorNombre(const void* a, const void* b)
@@ -383,6 +383,7 @@ int verRanking(tArbol* arbolIdx)
     tOperadorIdx idxTemp;
     tEstadisticasOperadores operadorTmp;
 
+
     tLista lIdx, listaRanking;
     tListaCrear(&lIdx);
     tListaCrear(&listaRanking);
@@ -393,7 +394,7 @@ int verRanking(tArbol* arbolIdx)
     if(!pfOperadores)
     {
         tListaVaciar(&lIdx);
-        return ERROR_ARCHIVO;
+        return ERROR_ARCH;
     }
 
     //proceso de lIdx-> sacar primero, leer archivo, e insertar ordenado en listaRanking

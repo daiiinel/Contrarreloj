@@ -51,7 +51,7 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
     ///Zonas
     tListaCrear(&lZonas);
     i=1;// lo vuelvo a setear
-    while(i < param->cantZona)
+    while(i <= param->cantZona)
     {
         sprintf(auxZona.nom, "Z%d", i);
         auxZona.capacidad=param->capPila;
@@ -67,7 +67,8 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
     jor->tiempo=0;
     jor->tiempo_maximo= param->minJornada;
     jor->puntaje=0;
-    jor->contenedoresEntregados = jor->cantBuquesDescargados;
+    jor->cantBuquesDescargados=0;
+    jor->contenedoresEntregados=0;
     jor->lMuelles= lMuelles;
     jor->cCamiones= cCamiones;
     jor->buquesEnTiempo= buquesEnTiempo;
@@ -80,10 +81,6 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
     return TODO_OK;
 }
 
-//esperar dentro de comandos
-//arrvis de camiones y buques por separado
-//hago el printeo de la jornada finalizada por k razon;
-
 int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores* datosOperador)
 {
     int estado, pena=0;
@@ -93,7 +90,6 @@ int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores
 
     tListaCrear(&historial);
     cargarVectorComandos(&comandos, param);
-    // arrivo los que llegan en el momento 0;
 
     system("cls");
     printf("---------Inicio de una nueva jornada---------\n");
@@ -115,18 +111,17 @@ int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores
         jor->puntaje-=(pena*PUNTAJE_PENALIZADOR);
     }
     printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje, pena,
-           jor->contenedoresEntregados, jor->cantBuquesDescargados);
+           jor->contenedoresEntregados, PUNTAJE_ENTRGA ,jor->cantBuquesDescargados, PUNTAJE_DESEMBARCO);
     system("pause");
-   // paso al hstorial del operador, lo hace dai por el arbol
+
    tListaMostrar(&historial,printHistoria);
    archivoFinJornada(jor, datosOperador->id);
 
     datosOperador->puntuacion += jor->puntaje;
 
-
     return TODO_OK;
 }
-/// para ver el tope de la pila del buque en el muelle
+
 void mostrarBuque(void* dato)
 {
     tMuelle dat= *(tMuelle*)dato;
@@ -138,6 +133,7 @@ void mostrarBuque(void* dato)
 
     system("pause");
 }
+
 int estadoDeJornada(tJornada *jor, tLista coman)
 {
     if(jor->tiempo >= jor->tiempo_maximo)
@@ -145,7 +141,8 @@ int estadoDeJornada(tJornada *jor, tLista coman)
 
     // si todas las colas estan vacias es porque
     // no hay mas buques en ningun lado  y  no hay mas camiones
-    if(colaVacia(&(jor->buquesEnTiempo)) && colaVacia(&(jor->camionesEnTiempo)) && colaVacia(&(jor->cBuques)) && colaVacia(&(jor->cCamiones)))
+    if(colaVacia(&(jor->buquesEnTiempo)) && colaVacia(&(jor->camionesEnTiempo))
+       && colaVacia(&(jor->cBuques)) && colaVacia(&(jor->cCamiones)) && !hayAtracosDeMuelles(&(jor->lMuelles)))
         return FIN_JORNADA;
 
     if(hayBloqueoOperativo(jor)==BLOQUE_OPERATIVO)
@@ -174,7 +171,6 @@ void procesarEnMedio(tJornada*jor, int tiempoUso)
         ponerEnCola(&(jor->camionesEnTiempo), &auxCamion, TAM_CAMION);
     }
 }
-
 
 int contarPuntajeNegativo(tCola *colaCamiones)
 {
@@ -213,19 +209,7 @@ void avanceAutomatico(tJornada *jor)
 int hayBloqueoOperativo(tJornada* jor)
 {
     int capZonas;
-    /*tZona zona;
-    tCamiones camion;
-    tContenedor conte;*/
     capZonas = capacidadDeZonas(&jor->lZonas);
-
-    /*verPrimeroEnCola(&jor->camionesEnTiempo,&camion,TAM_CAMION);
-    strcpy(conte.id,camion.pedido);
-    printf("capZonas: %d\n",capZonas);
-    if(buscarContenedorEspEnZonas(&jor->lZonas,&zona,&conte) > NO_EXISTE)
-    {
-        mostrarUnaZona(&zona,NULL);
-        return TODO_OK;
-    }*/
 
     if(bloqueoPorDES(jor,capZonas) && bloqueoPorENT(jor,capZonas))
     {
@@ -255,12 +239,13 @@ void liberarMuelle(tJornada* jor, tMuelle*mue)
     {
         mue->estado=false;
         mue->buque=NULL;
-        tListaEncontrarHacer(&(jor->lMuelles), mue,TAM_MUELLE, cmpMuelleNom, actualizarMuelleMartu);
+        tListaEncontrarHacer(&(jor->lMuelles), mue,TAM_MUELLE, cmpMuelleNom, actualizarReservarMuelle);
         jor->puntaje+=PUNTAJE_DESEMBARCO;
+        jor->cantBuquesDescargados++;
         acercarBuques(jor);
     }
 }
-// saco de la jornada lo que tengo
+
 int arrivoCamiones(tJornada *jor)
 {
     tCamiones atender;
@@ -304,14 +289,14 @@ int acercarBuques(tJornada* jor)
             // en el muelle voy a tener el muelle libre
             auxMuelle.buque = auxBuque;
             auxMuelle.estado=true;
-            tListaEncontrarHacer(&(jor->lMuelles),&auxMuelle,TAM_MUELLE,cmpMuelleNom,actualizarMuelleMartu);
+            tListaEncontrarHacer(&(jor->lMuelles),&auxMuelle,TAM_MUELLE,cmpMuelleNom,actualizarReservarMuelle);
         }else// no hay muelles libres de momento
             band=0;
     }
     return TODO_OK;
 }
-//funcion de martu, de ultima puede llamarse actualizarMuelleBqque¿ o nose
-void actualizarMuelleMartu(void* viejo,void* nuevo)
+
+void actualizarReservarMuelle(void* viejo,void* nuevo)
 {
     tMuelle *vie=(tMuelle*)viejo, *nue=(tMuelle*)nuevo;
     vie->buque=nue->buque;
@@ -340,7 +325,6 @@ void verPrimeros(tJornada *jor)
     // necesito ver lo que pide el primero de los camiones
     if(verPrimeroEnCola(&(jor->camionesEnTiempo), &camion, TAM_CAMION)==TODO_OK)
         printf("\nEl camion %s pide ->%s\n", camion.num, camion.pedido);
-
 }
 
 void verKPrimeros(tCola* camionesEspera)
@@ -373,7 +357,6 @@ void verKPrimeros(tCola* camionesEspera)
             }
             ponerEnCola(&colaAuxiliar, &camion, TAM_CAMION);
         }
-        /// se vaa a uqedar aca para simepre
         while(!(colaVacia(&colaAuxiliar)))
         {
             sacarDeCola(&colaAuxiliar, &camion, TAM_CAMION);
@@ -432,7 +415,6 @@ void mostrarUnaZona(void *datoZona, void* extra)
             printf("%s ", nomCont.id);
             apilar(&auxPila, &nomCont, TAM_CONTENEDOR);
         }
-        //esta todo dado vuelta en la pila auxiliar
 
         printf("]");
         while(!(pilaVacia(&auxPila)))
@@ -478,7 +460,7 @@ int archivoFinJornada(tJornada *jor, unsigned idOperador)
         pf=fopen(JORNADA_ARCH, "w+t");
         if(!pf)
             return ERROR_ARCH;
-        //si entro aca es porque tuvo que crear el archivo entonces no habia nada antes
+
         fprintf(pf,"\t---------Historial de Jornadas---------\n");
         fprintf(pf, "%-5s %-15s %-10s %s\n", "ID","OPERADOR", "PUNTAJE","TIEMPO FINAL/DISPONIBLE");
     }
@@ -496,8 +478,6 @@ int bajarPuertoTxt(tJornada*jor)
     FILE* pPuerto= fopen(PUERTO_ARCH, "rt");
     char linea[TAM_LINEA];
 
-    int tiempoJornada, cantMuelles, cantZonas, capPila; //innecesarias�
-
     tBuque buq;
     tCamiones cam;
 
@@ -509,15 +489,11 @@ int bajarPuertoTxt(tJornada*jor)
     if(!pPuerto)
         return ERROR_ARCH;
 
-    fscanf(pPuerto, "%*[^:]:%d\n%*[^:]:%d\n%*[^:]:%d\n%*[^:]:%d\n",
-           &tiempoJornada, &cantMuelles, &cantZonas, &capPila);
-
-    /* //--variante sin necesidad de asignar variables inusables�
     fgets(linea, TAM_LINEA, pPuerto); //[tiempo jornad
     fgets(linea, TAM_LINEA, pPuerto); //[cantmuelle
     fgets(linea, TAM_LINEA, pPuerto); //[zonas
     fgets(linea, TAM_LINEA, pPuerto); //[capila
-    fgets(linea, TAM_LINEA, pPuerto); //\n*/
+    fgets(linea, TAM_LINEA, pPuerto); //\n
 
     fgets(linea, TAM_LINEA, pPuerto); //[BUQUES]
 
@@ -573,10 +549,12 @@ tBuque* tMuelleVerBuque(tMuelle* muelle)
 {
     return muelle->buque;
 }
+
 tPila* tBuqueVerPila(tBuque* pBuque)
 {
     return &(pBuque->contenedores);
 }
+
 tPila* tZonaVerPila(tZona* pZona)
 {
     return &(pZona->contenedores);

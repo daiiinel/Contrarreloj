@@ -30,8 +30,8 @@
 #define MSG_FIN_JORNADA     "\n ------ FIN DE JORNADA ------\n"\
                             "\t Tiempo utilizado: %d / %d \t Puntaje obtenido: %d\n"\
                             "\t Camiones pendientes de atender: %d\n"\
-                            "\t Contenedores atendidos: %d\n"\
-                            "\t Buques descargados: %d\n"
+                            "\t Contenedores atendidos: %d -> %d \n"\
+                            "\t Buques descargados: %d -> %d \n"
 
 //salidas
 
@@ -52,18 +52,17 @@
 #define MAX_NOMBRE_OP       50
 #define MAX_NOMBRE_MUELLE   4
 #define MAX_NOMBRE_ZONA     4
-#define MAX_NOMBRE_CONT     5
+#define MAX_NOMBRE_CONT     8
 #define MAX_NOMBRE_BUQUE    5
 #define MAX_NOMBRE_CAMION   5
-#define MAX_NOMBRE_CONT     5
 
 //tamaños
-#define TAM_LINEA           100
-#define TAM_BUQUE sizeof(tBuque)
-#define TAM_CAMION sizeof(tCamiones)
-#define TAM_ZONA sizeof(tZona)
-#define TAM_MUELLE sizeof(tMuelle)
-#define TAM_CONTENEDOR sizeof(tContenedor)
+#define TAM_LINEA           1024
+#define TAM_BUQUE           sizeof(tBuque)
+#define TAM_CAMION          sizeof(tCamiones)
+#define TAM_ZONA            sizeof(tZona)
+#define TAM_MUELLE          sizeof(tMuelle)
+#define TAM_CONTENEDOR      sizeof(tContenedor)
 
 //nombres de archivos
 #define PUERTO_ARCH             "puerto.txt"
@@ -73,7 +72,7 @@
 #define JORNADA_ARCH            "jornadas.txt"
 
 
-//valores estaticos��
+//valores estaticos
 #define CAMIONES_A_MOSTRAR  3 //en item "mostrar los 3 primeros de la cola de K"
 
 //Puntajes

@@ -35,20 +35,13 @@ int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos,tLista* historia
     char* argumentos[TAM_ARG];
     tComando comando;
 
-
-    //El usuario ingresa un comando
     if(leerComandoOperacion(linea,argumentos,&comando,comandos))
-    {
         return ERROR_INGRESO_COMANDO;
-    }
-    //utilizo el puntero a funcion de la estructura
+
     procesarEnMedio(jornada, comando.tiempoUso);
-    //Esta funcion se encarga de validar y ejecutar el comando
+
     comando.procesarComando(argumentos,jornada,&comando,historial);
 
-
-
-    //Guardar historia
     return TODO_OK;
 }
 
@@ -58,18 +51,17 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
     int cant = 0;
 
     printf("OPERADOR> ");
-    //Leo el ingreso y agrego '\0'al final de cadena
     do
     {
         if(fgets(linea, TAM_LINEA+1, stdin) == NULL)
-            return 1;
+            return ERROR_INGRESO_COMANDO;
 
     }while(linea[0] == '\n');
 
     act = strchr(linea,'\n');
     if(act == NULL)
     {
-        return -1;//linea larga
+        return ERROR_INGRESO_COMANDO;//linea larga
     }
     *act = '\0';
 
@@ -82,9 +74,8 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
         act = strtok(NULL," ");
     }
 
-    //Valido si existe la opracion
     copiarCadenaAMayus(comando->nomComando,*palabras);
-    ///Recordar:Agregar una funcion que copie sin pasarse del tamanio de liinea
+
     if(tListaBuscarElemOrd(comandos,comando,sizeof(tComando),cmpComando) < 0)
     {
         puts("No existe el comando ingresado");
@@ -129,16 +120,13 @@ int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* com
     //actualizo puntos
     zona.cantContenedores++;
     jornada->tiempo+=comando->tiempoUso;
-    jornada->contenedoresEntregados++;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
-   // tListaInsertarOrdConDupli(&jornada->lMuelles,&muelle,sizeof(tMuelle),cmpMuelle,actualizarMuelle);
 
     return TODO_OK;
 }
 
 int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada)
 {
-    //Valido que existe
     if(tListaBuscarElemOrd(&jornada->lMuelles,muelle,sizeof(tMuelle),cmpMuelle) < 0)
     {
         puts("Error argumento 1");
@@ -160,11 +148,9 @@ int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada)
     {
         puts("Zona sin espacio");
         return ERROR_COMANDO;
-    }else
-    {
-        return TODO_OK;
     }
 
+    return TODO_OK;
 }
 
 int operacionDES(tMuelle* muelle,tZona* zona,  tContenedor* cont, tJornada* jor)
@@ -181,7 +167,6 @@ int operacionDES(tMuelle* muelle,tZona* zona,  tContenedor* cont, tJornada* jor)
         liberarMuelle(jor, muelle);
 
     apilar(pilaConteZona,cont->id,sizeof(tContenedor));
-
 
     return TODO_OK;
 }
@@ -200,13 +185,9 @@ int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* com
     copiarCadenaAMayus(zona2.nom,argv[arg2]);
 
     if(validarREU(&zona1,&zona2,jornada))
-    {
         return ERROR_COMANDO;
-    }
-    //Si hay un evento en el medio antes de que termine la operacion
-    //en este momento se actualiza
+
     procesarEnMedio(jornada, comando->tiempoUso);
-    //jornada->tiempo+= comando->tiempoUso;
 
     operacionREU(&zona1,&zona2,&conte);
     guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
@@ -275,9 +256,8 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
     }
 
     if(validarENT(&jornada->lZonas,&jornada->camionesEnTiempo,&zona))
-    {
         return ERROR_ARCH;
-    }
+
     procesarEnMedio(jornada, comando->tiempoUso);
     operacionENT(&zona,&camion,&conte,&jornada->camionesEnTiempo);
     guardarComando(argv[nomArg],zona.nom,camion.num,conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
@@ -305,6 +285,7 @@ int validarENT(tLista* lZonas,tCola* cCamionesEsp,tZona* zona)
         puts("El contenedor no esta en el tope de alguna zona");
         return ERROR_ARCH;
     }
+
     return TODO_OK;
 }
 

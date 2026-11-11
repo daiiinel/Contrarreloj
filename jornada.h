@@ -16,8 +16,6 @@ typedef struct jornada
     tPila contenedores;
 }tBuque;
 
-tPila* tBuqueVerPila(tBuque* pBuque);
-
 typedef struct
 {
     char nom[MAX_NOMBRE_MUELLE];
@@ -29,13 +27,9 @@ typedef struct
 {
     char num[MAX_NOMBRE_CAMION];
     unsigned tiempoLlegada;
-    char pedido[MAX_NOMBRE_ZONA];// una estructura de contenedor??
+    char pedido[MAX_NOMBRE_ZONA];
     bool atendido; // 0 no atendido ;   1 atendido
 }tCamiones;
-
-
-tBuque* tMuelleVerBuque(tMuelle* muelle);
-
 
 typedef struct
 {
@@ -45,23 +39,10 @@ typedef struct
     tPila contenedores;
 }tZona;
 
-tPila* tZonaVerPila(tZona* pZona);
-
-// bajo los camiones yo, de puerto.txt que dai trae generado
-// hago una cola de camiones
-
 typedef struct
 {
     char id[MAX_NOMBRE_CONT];
 }tContenedor;
-
-typedef struct
-{
-    unsigned numJornada;
-    char nomOperador[MAX_NOMBRE_OP];
-    int puntuacionObtenida;
-    unsigned movimientosRealizados;
-}tEstadisticaJornada;
 
 typedef struct
 {
@@ -98,7 +79,7 @@ int arrivoBuques(tJornada* jor);
 int acercarBuques(tJornada* jor);
 int cmpMuelleLibre(const void* reg1, const void* estado);
 int cmpMuelleNom(const void* reg1,const void* reg2);
-void actualizarMuelleMartu(void* viejo, void* nuevo);
+void actualizarReservarMuelle(void* viejo, void* nuevo);
 void verPrimeros(tJornada *jor);
 
 void mostrarColaBuqesEspera(tCola *colaBuquesEspera);
@@ -119,6 +100,9 @@ int mostrarResultadoJornada(tJornada *jor, int razon);
 int archivoFinJornada(tJornada *jor, unsigned idOperador);
 int archivoOperadores(tJornada *jor);
 
+tPila* tZonaVerPila(tZona* pZona);
+tBuque* tMuelleVerBuque(tMuelle* muelle);
+tPila* tBuqueVerPila(tBuque* pBuque);
 
 int capacidadDeZonas(tLista* zonas);
 int hayBloqueoOperativo(tJornada* jor);
@@ -129,6 +113,8 @@ int buscarContenedorEspEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor
 int cmpContenedor(const void* a,const void* b);
 int bloqueoPorENT(tJornada* jor,int capZonas);
 int bloqueoPorDES(tJornada* jor,int capZonas);
+
+int hayAtracosDeMuelles(tLista* muelles);
 
 
 #endif // JORNADA_H_INCLUDED

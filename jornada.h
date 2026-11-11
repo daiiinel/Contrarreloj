@@ -27,7 +27,7 @@ typedef struct
 {
     char num[MAX_NOMBRE_CAMION];
     unsigned tiempoLlegada;
-    char pedido[MAX_NOMBRE_ZONA];// una estructura de contenedor??
+    char pedido[MAX_NOMBRE_ZONA];
     bool atendido; // 0 no atendido ;   1 atendido
 }tCamiones;
 
@@ -43,14 +43,6 @@ typedef struct
 {
     char id[MAX_NOMBRE_CONT];
 }tContenedor;
-
-typedef struct
-{
-    unsigned numJornada;
-    char nomOperador[MAX_NOMBRE_OP];
-    unsigned puntuacionObtenida,
-             movimientosRealizados, cantMov;
-}tEstadisticaJornada;
 
 typedef struct
 {
@@ -73,7 +65,7 @@ int nuevaJornada(tEstadisticasOperadores*datosOperador, tJornada *jor, tParametr
 int bajarPuertoTxt(tJornada*jor);
 
 //Jornada
-int desarrolloJornada(tJornada* jor, tParametros *param);
+int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores* datosOperador);
 void verKPrimeros(tCola* camionesEspera);
 int estadoDeJornada(tJornada *jor, tLista coman);
 void procesarEnMedio(tJornada* jor, int tiempoUso);
@@ -87,7 +79,7 @@ int arrivoBuques(tJornada* jor);
 int acercarBuques(tJornada* jor);
 int cmpMuelleLibre(const void* reg1, const void* estado);
 int cmpMuelleNom(const void* reg1,const void* reg2);
-void actualizarMuelleMartu(void* viejo, void* nuevo);
+void actualizarReservarMuelle(void* viejo, void* nuevo);
 void verPrimeros(tJornada *jor);
 
 void mostrarColaBuqesEspera(tCola *colaBuquesEspera);
@@ -104,11 +96,25 @@ void mostrarUnaZona(void *datoZona, void *extra);
 
 //Fin Jornada
 int mostrarResultadoJornada(tJornada *jor, int razon);
-int archivoFinJornada(tJornada *jor);
+// Historial de jornada puede que no este terminado si hay que aregar algo
+int archivoFinJornada(tJornada *jor, unsigned idOperador);
 int archivoOperadores(tJornada *jor);
 
 tPila* tZonaVerPila(tZona* pZona);
 tBuque* tMuelleVerBuque(tMuelle* muelle);
 tPila* tBuqueVerPila(tBuque* pBuque);
+
+int capacidadDeZonas(tLista* zonas);
+int hayBloqueoOperativo(tJornada* jor);
+void contarEspacioZona(void* info,void* param);
+void muelleEnUso(void* info,void* param);
+int buscarEnPila(tPila *pp,void *elem, unsigned tam,Cmp cmp);
+int buscarContenedorEspEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor);
+int cmpContenedor(const void* a,const void* b);
+int bloqueoPorENT(tJornada* jor,int capZonas);
+int bloqueoPorDES(tJornada* jor,int capZonas);
+
+int hayAtracosDeMuelles(tLista* muelles);
+
 
 #endif // JORNADA_H_INCLUDED

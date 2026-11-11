@@ -5,9 +5,7 @@
 
 #include "nodo.h"
 
-//#define VACIO -1
-#define ERROR_ARCHIVO -1
-//#define NO_EXISTE -1
+
 
 typedef tNodoA* tArbol;
 
@@ -26,6 +24,7 @@ int insertarArbolIte(tArbol*pa, const void* elem, unsigned tam, Cmp);
 
 
 void vaciarArbol(tArbol* pa);
+int arbolVacio(const tArbol *pa);
 
 int buscarElemArbol(const tArbol*p, void *d, unsigned tam, Cmp cmp);
 

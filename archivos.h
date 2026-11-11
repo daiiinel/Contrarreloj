@@ -4,8 +4,6 @@
 #include "constantes.h"
 #include "TDA/colaDinamica.h"
 
-//propuesta
-
 typedef struct
 {
     int minJornada;

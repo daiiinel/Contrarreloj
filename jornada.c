@@ -6,10 +6,10 @@
 #include "comandos.h"
 #include "archivos.h"
 
+void printHistoria(const void* a);
+
 int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParametros *param)
 {
-    //estructura que contiene datos de puerto.txt y config.txt
-
     tLista lMuelles;
     tCola cCamiones;
     tCola camionesEnTiempo;
@@ -51,10 +51,9 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
     ///Zonas
     tListaCrear(&lZonas);
     i=1;// lo vuelvo a setear
-    while(i < param->cantZona)
+    while(i <= param->cantZona)
     {
         sprintf(auxZona.nom, "Z%d", i);
-
         auxZona.capacidad=param->capPila;
         auxZona.cantContenedores=0;
         crearPila(&(auxZona.contenedores));
@@ -82,16 +81,17 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
     return TODO_OK;
 }
 
-int desarrolloJornada(tJornada* jor, tParametros *param)
+int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores* datosOperador)
 {
     int estado, pena=0;
     tLista comandos;
+    tLista historial;
     tCamiones cam;
 
+    tListaCrear(&historial);
     cargarVectorComandos(&comandos, param);
 
     system("cls");
-
     printf("---------Inicio de una nueva jornada---------\n");
 
     while((estado=estadoDeJornada(jor, comandos))==SIGUE)
@@ -99,7 +99,7 @@ int desarrolloJornada(tJornada* jor, tParametros *param)
         procesarArrivos(jor);
         printf("Tiempo: %d\n", jor->tiempo);
         verPrimeros(jor);
-        ejecutarComandoOperacion(jor, &comandos);
+        ejecutarComandoOperacion(jor, &comandos,&historial);
 
         system("pause");
         system("cls");
@@ -110,10 +110,15 @@ int desarrolloJornada(tJornada* jor, tParametros *param)
         pena=contarPuntajeNegativo(&(jor->camionesEnTiempo));
         jor->puntaje-=(pena*PUNTAJE_PENALIZADOR);
     }
-    printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje, pena, jor->contenedoresEntregados, PUNTAJE_ENTRGA, jor->cantBuquesDescargados, PUNTAJE_DESEMBARCO);
+    printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje, pena,
+           jor->contenedoresEntregados, PUNTAJE_ENTRGA ,jor->cantBuquesDescargados, PUNTAJE_DESEMBARCO);
     system("pause");
-    archivoFinJornada(jor);
-   //    historialDelOperadores();
+
+   tListaMostrar(&historial,printHistoria);
+   archivoFinJornada(jor, datosOperador->id);
+
+    datosOperador->puntuacion += jor->puntaje;
+
     return TODO_OK;
 }
 
@@ -136,25 +141,35 @@ int estadoDeJornada(tJornada *jor, tLista coman)
 
     // si todas las colas estan vacias es porque
     // no hay mas buques en ningun lado  y  no hay mas camiones
-    if(colaVacia(&(jor->buquesEnTiempo)) && colaVacia(&(jor->camionesEnTiempo)) && colaVacia(&(jor->cBuques)) && colaVacia(&(jor->cCamiones)))
+    if(colaVacia(&(jor->buquesEnTiempo)) && colaVacia(&(jor->camionesEnTiempo))
+       && colaVacia(&(jor->cBuques)) && colaVacia(&(jor->cCamiones)) && !hayAtracosDeMuelles(&(jor->lMuelles)))
         return FIN_JORNADA;
 
-    // llamo a la funcion de pedro del bloqueo
+    if(hayBloqueoOperativo(jor)==BLOQUE_OPERATIVO)
+        return  BLOQUE_OPERATIVO;
 
     return SIGUE;
 }
-
-void procesarEnMedio(tJornada* jor, int tiempoUso)
+void procesarEnMedio(tJornada*jor, int tiempoUso)
 {
     tBuque auxBuque;
     tCamiones auxCamion;
+    int tiempoFin= jor->tiempo+tiempoUso;
 
-    verPrimeroEnCola(&(jor->cBuques), &auxBuque, TAM_BUQUE);
-    verPrimeroEnCola(&(jor->cCamiones), &auxCamion, TAM_CAMION);
-    if(auxBuque.tiempoLlegada < (jor->tiempo + tiempoUso))
-        arrivoBuques(jor);
-    if(auxCamion.tiempoLlegada < (jor->tiempo + tiempoUso))
-        arrivoCamiones(jor);
+    while(!colaVacia(&(jor->cBuques)) && verPrimeroEnCola(&(jor->cBuques), &auxBuque, TAM_BUQUE)==TODO_OK
+          && auxBuque.tiempoLlegada < tiempoFin)
+    {
+        sacarDeCola(&(jor->cBuques), &auxBuque, TAM_BUQUE);
+        ponerEnCola(&(jor->buquesEnTiempo), &auxBuque, TAM_BUQUE);
+    }
+    acercarBuques(jor);
+
+    while(!colaVacia(&(jor->cCamiones)) && verPrimeroEnCola(&(jor->cCamiones), &auxCamion, TAM_CAMION)==TODO_OK
+          && auxCamion.tiempoLlegada < tiempoFin)
+    {
+        sacarDeCola(&(jor->cCamiones), &auxCamion, TAM_CAMION);
+        ponerEnCola(&(jor->camionesEnTiempo), &auxCamion, TAM_CAMION);
+    }
 }
 
 int contarPuntajeNegativo(tCola *colaCamiones)
@@ -179,7 +194,6 @@ void avanceAutomatico(tJornada *jor)
         {
             if(auxbuque.tiempoLlegada < auxCamion.tiempoLlegada)
             {
-
                 arrivoBuques(jor);
                 jor->tiempo += (auxbuque.tiempoLlegada - jor->tiempo);
             }else
@@ -192,6 +206,19 @@ void avanceAutomatico(tJornada *jor)
         jor->tiempo+= (jor->tiempo_maximo - jor->tiempo);
 }
 
+int hayBloqueoOperativo(tJornada* jor)
+{
+    int capZonas;
+    capZonas = capacidadDeZonas(&jor->lZonas);
+
+    if(bloqueoPorDES(jor,capZonas) && bloqueoPorENT(jor,capZonas))
+    {
+        puts("Algo esta mal");
+        return BLOQUE_OPERATIVO;
+    }
+    return TODO_OK;
+}
+
 int procesarArrivos(tJornada *jor)
 {
     tCamiones auxCamion;
@@ -202,33 +229,7 @@ int procesarArrivos(tJornada *jor)
     arrivoBuques(jor);
     acercarBuques(jor);
     arrivoCamiones(jor);
-/*
-    if(jor->tiempo==0)
-    {
 
-        if(auxBuque.tiempoLlegada < auxCamion.tiempoLlegada)
-        {
-            arrivoBuques(jor);
-            jor->tiempo+=auxBuque.tiempoLlegada;
-            acercarBuques(jor);
-
-        }else
-        {
-            arrivoCamiones(jor);
-            jor->tiempo+=auxCamion.tiempoLlegada;
-            arrivoBuques(jor);
-            jor->tiempo+= (auxBuque.tiempoLlegada - jor->tiempo);
-            acercarBuques(jor);
-
-        }
-    }
-    else{
-        arrivoCamiones(jor);
-        arrivoBuques(jor);
-        acercarBuques(jor);
-
-    }
-*/
     return TODO_OK;
 }
 
@@ -238,13 +239,13 @@ void liberarMuelle(tJornada* jor, tMuelle*mue)
     {
         mue->estado=false;
         mue->buque=NULL;
-        tListaEncontrarHacer(&(jor->lMuelles), mue,TAM_MUELLE, cmpMuelleNom, actualizarMuelleMartu);
+        tListaEncontrarHacer(&(jor->lMuelles), mue,TAM_MUELLE, cmpMuelleNom, actualizarReservarMuelle);
         jor->puntaje+=PUNTAJE_DESEMBARCO;
         jor->cantBuquesDescargados++;
         acercarBuques(jor);
     }
 }
-// saco de la jornada lo que tengo
+
 int arrivoCamiones(tJornada *jor)
 {
     tCamiones atender;
@@ -262,7 +263,7 @@ int arrivoBuques(tJornada *jor)
 {
     tBuque atender;
     verPrimeroEnCola(&(jor->cBuques), &atender, TAM_BUQUE);
-    while(atender.tiempoLlegada <= (jor->tiempo) && !(colaVacia(&(jor->cBuques))))
+    while(!(colaVacia(&(jor->cBuques))) && atender.tiempoLlegada <= (jor->tiempo))
     {
         if(sacarDeCola(&(jor->cBuques), &atender, TAM_BUQUE)==TODO_OK)
             ponerEnCola(&(jor->buquesEnTiempo), &atender,TAM_BUQUE);
@@ -277,9 +278,9 @@ int acercarBuques(tJornada* jor)
 {
     tMuelle auxMuelle;
     tBuque *auxBuque;
-    bool refe=0;
+    bool refe=0, band=1;
 
-    while(!colaVacia(&(jor->buquesEnTiempo)))
+    while(!colaVacia(&(jor->buquesEnTiempo)) && band)
     {
         auxBuque=(tBuque*)malloc(TAM_BUQUE);
         if(tListaEncontrar(&(jor->lMuelles),&auxMuelle, &refe,TAM_MUELLE,cmpMuelleLibre)==1)
@@ -288,14 +289,14 @@ int acercarBuques(tJornada* jor)
             // en el muelle voy a tener el muelle libre
             auxMuelle.buque = auxBuque;
             auxMuelle.estado=true;
-            tListaEncontrarHacer(&(jor->lMuelles),&auxMuelle,TAM_MUELLE,cmpMuelleNom,actualizarMuelleMartu);
+            tListaEncontrarHacer(&(jor->lMuelles),&auxMuelle,TAM_MUELLE,cmpMuelleNom,actualizarReservarMuelle);
         }else// no hay muelles libres de momento
-            break;
+            band=0;
     }
     return TODO_OK;
 }
-//funcion de martu, de ultima puede llamarse actualizarMuelleBqque¿ o nose
-void actualizarMuelleMartu(void* viejo,void* nuevo)
+
+void actualizarReservarMuelle(void* viejo,void* nuevo)
 {
     tMuelle *vie=(tMuelle*)viejo, *nue=(tMuelle*)nuevo;
     vie->buque=nue->buque;
@@ -324,7 +325,6 @@ void verPrimeros(tJornada *jor)
     // necesito ver lo que pide el primero de los camiones
     if(verPrimeroEnCola(&(jor->camionesEnTiempo), &camion, TAM_CAMION)==TODO_OK)
         printf("\nEl camion %s pide ->%s\n", camion.num, camion.pedido);
-
 }
 
 void verKPrimeros(tCola* camionesEspera)
@@ -340,10 +340,10 @@ void verKPrimeros(tCola* camionesEspera)
 
     /// Descolo todo y solo muestro los k primeros
     if((colaVacia(camionesEspera))==1)
-        printf("NO hay camoines por ahora");
+        printf("NO hay camiones por ahora");
     else
     {
-        while((colaVacia(camionesEspera))==0)
+        while(!colaVacia(camionesEspera))
         {
             sacarDeCola(camionesEspera, &camion,TAM_CAMION);
             if(cont< CAMIONES_A_MOSTRAR)
@@ -357,7 +357,6 @@ void verKPrimeros(tCola* camionesEspera)
             }
             ponerEnCola(&colaAuxiliar, &camion, TAM_CAMION);
         }
-        /// se vaa a uqedar aca para simepre
         while(!(colaVacia(&colaAuxiliar)))
         {
             sacarDeCola(&colaAuxiliar, &camion, TAM_CAMION);
@@ -416,7 +415,6 @@ void mostrarUnaZona(void *datoZona, void* extra)
             printf("%s ", nomCont.id);
             apilar(&auxPila, &nomCont, TAM_CONTENEDOR);
         }
-        //esta todo dado vuelta en la pila auxiliar
 
         printf("]");
         while(!(pilaVacia(&auxPila)))
@@ -454,7 +452,7 @@ void mostrarColaBuqesEspera(tCola *colaBuquesEspera)
     }
 }
 
-int archivoFinJornada(tJornada *jor)
+int archivoFinJornada(tJornada *jor, unsigned idOperador)
 {
     FILE *pf=fopen(JORNADA_ARCH,"r+t");
     if(!pf)
@@ -462,14 +460,14 @@ int archivoFinJornada(tJornada *jor)
         pf=fopen(JORNADA_ARCH, "w+t");
         if(!pf)
             return ERROR_ARCH;
-        //si entro aca es porque tuvo que crear el archivo entonces no habia nada antes
+
         fprintf(pf,"\t---------Historial de Jornadas---------\n");
-        fprintf(pf, "%-15s %-10s %-20s %s\n","OPERADOR", "PUNTAJE","CANT. MOVIMIENTOS","TIEMPO FINAL/DISPONIBLE");
+        fprintf(pf, "%-5s %-15s %-10s %s\n", "ID","OPERADOR", "PUNTAJE","TIEMPO FINAL/DISPONIBLE");
     }
     else
         fseek(pf,0,SEEK_END);
 
-    fprintf(pf,"%-15s %-10u %-20d %d/%d\n",jor->operador, jor->puntaje,jor->puntaje,jor->tiempo, jor->tiempo_maximo);
+    fprintf(pf,"%d %-15s %-10u %d/%d\n", idOperador, jor->operador, jor->puntaje,jor->tiempo, jor->tiempo_maximo);
     fclose(pf);
 
     return TODO_OK;
@@ -479,8 +477,6 @@ int bajarPuertoTxt(tJornada*jor)
 {
     FILE* pPuerto= fopen(PUERTO_ARCH, "rt");
     char linea[TAM_LINEA];
-
-    int tiempoJornada, cantMuelles, cantZonas, capPila; //innecesarias�
 
     tBuque buq;
     tCamiones cam;
@@ -493,15 +489,11 @@ int bajarPuertoTxt(tJornada*jor)
     if(!pPuerto)
         return ERROR_ARCH;
 
-    fscanf(pPuerto, "%*[^:]:%d\n%*[^:]:%d\n%*[^:]:%d\n%*[^:]:%d\n",
-           &tiempoJornada, &cantMuelles, &cantZonas, &capPila);
-
-    /* //--variante sin necesidad de asignar variables inusables�
     fgets(linea, TAM_LINEA, pPuerto); //[tiempo jornad
     fgets(linea, TAM_LINEA, pPuerto); //[cantmuelle
     fgets(linea, TAM_LINEA, pPuerto); //[zonas
     fgets(linea, TAM_LINEA, pPuerto); //[capila
-    fgets(linea, TAM_LINEA, pPuerto); //\n*/
+    fgets(linea, TAM_LINEA, pPuerto); //\n
 
     fgets(linea, TAM_LINEA, pPuerto); //[BUQUES]
 
@@ -519,7 +511,7 @@ int bajarPuertoTxt(tJornada*jor)
         while (pCont != NULL)
         {
             sscanf(pCont+1, "C=%s", cadCont);
-            apilar(&buq.contenedores, cadCont, 5);
+            apilar(&buq.contenedores, cadCont, MAX_NOMBRE_CONT);
 
             *pCont = '\0';
             pCont = strrchr(linea, ',');
@@ -527,7 +519,7 @@ int bajarPuertoTxt(tJornada*jor)
         if(pInicioCont!=NULL)
         {
             sscanf(pInicioCont+1, "C=%s", cadCont);
-            apilar(&buq.contenedores, cadCont, 5);
+            apilar(&buq.contenedores, cadCont, MAX_NOMBRE_CONT);
         }
 
         ponerEnCola(&(jor->cBuques), &buq, TAM_BUQUE);
@@ -566,4 +558,173 @@ tPila* tBuqueVerPila(tBuque* pBuque)
 tPila* tZonaVerPila(tZona* pZona)
 {
     return &(pZona->contenedores);
+}
+
+void contarEspacioZona(void* info,void* param)
+{
+    tZona* zona = (tZona*)info;
+    int* cont = (int*)param;
+    int cap;
+    cap = zona->capacidad - zona->cantContenedores;
+    *cont += cap;
+}
+
+int capacidadDeZonas(tLista* zonas)
+{
+    int cont=0;
+    tListaRecorrer(zonas,contarEspacioZona, &cont);
+    return cont;
+}
+
+int hayAtracosDeMuelles(tLista* muelles)
+{
+    int band = 0;
+    tListaRecorrer(muelles,muelleEnUso,&band);
+    return band;
+}
+
+void muelleEnUso(void* info,void* param)
+{
+    tMuelle* muelle = (tMuelle*)info;
+    int* band = (int*)param;
+
+    if(muelle->estado)
+    {
+        *band = 1;
+    }
+}
+
+int buscarContenedorEspEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
+{
+    int pos = -1, i=0;
+    tPila* pPila;
+    tZona* pZona;
+    pZona = tListaBuscarPorPos(zonas,i);
+
+    while(pZona != NULL && pos == -1)
+    {
+        pPila = tZonaVerPila(pZona);
+        if(buscarEnPila(pPila,contenedor,sizeof(tContenedor),cmpContenedor) < 0)
+        {
+            i++;
+            pZona = tListaBuscarPorPos(zonas,i);
+        }
+        else
+        {
+            pos = i;
+            memcpy(zona,pZona,sizeof(tZona));
+        }
+    }
+    return pos;
+}
+
+int buscarEnPila(tPila *pp, void *info, unsigned tam, Cmp cmp)
+{
+    tPila auxPila;
+    int pos = NO_EXISTE, i = 0;
+    void *elem;
+
+    if(!pp || !info || !cmp || tam == 0)
+        return NO_EXISTE;
+
+    elem = malloc(tam);
+    if(!elem)
+    {
+        return SIN_MEM;
+    }
+    crearPila(&auxPila);
+
+    while(!pilaVacia(pp) && pos == NO_EXISTE)
+    {
+        desapilar(pp, elem, tam);
+
+        if(apilar(&auxPila, elem, tam))
+        {
+            apilar(pp, elem, tam);
+            pos = SIN_MEM;
+        }
+        else if(cmp(elem, info) == 0)
+        {
+            pos = i;
+            memcpy(info, elem, tam);
+        }
+        else
+            i++;
+    }
+    ///restaurar la pila original
+    while(!pilaVacia(&auxPila))
+    {
+        desapilar(&auxPila, elem, tam);
+        apilar(pp, elem, tam);
+    }
+
+    free(elem);
+    return pos;
+}
+
+int cmpContenedor(const void* a,const void* b)
+{
+    const tContenedor* contenedor1 = (const tContenedor*)a;
+    const tContenedor* contenedor2 = (const tContenedor*)b;
+
+    return strncmp(contenedor1->id,contenedor2->id,sizeof(contenedor1->id));
+}
+
+int bloqueoPorENT(tJornada* jor,int capZonas)
+{
+    tContenedor conte;
+    tCamiones camion;
+    tZona zona;
+    int encima;
+    if(colaVacia(&jor->cCamiones) && colaVacia(&jor->camionesEnTiempo))
+    {
+        puts("---!No hay camiones esperando y no hay futuras llegadas---");
+        return BLOQUE_OPERATIVO;
+    }
+    if(!colaVacia(&jor->camionesEnTiempo))
+    {
+        verPrimeroEnCola(&jor->camionesEnTiempo,&camion,TAM_CAMION);
+        strcpy(conte.id,camion.pedido);
+        if(buscarContenedorEspEnZonas(&jor->lZonas,&zona,&conte) < 0)
+        {
+            puts("---!No existe el contenedor en las zonas---");
+            return BLOQUE_OPERATIVO;
+        }
+        else
+        {
+            encima = buscarEnPila(&zona.contenedores,&conte,TAM_CONTENEDOR,cmpContenedor);
+            tListaInsertarOrdConDupli(&jor->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
+            if(capZonas < encima)
+            {
+                puts("---!No hay espacio suficiente para a reubicar hasta al tope---");
+                return BLOQUE_OPERATIVO;
+            }
+            return TODO_OK;
+        }
+    }
+    return TODO_OK;
+
+}
+int bloqueoPorDES(tJornada* jor,int capZonas)
+{
+    if(capZonas == 0)
+    {
+        puts("---!No hay espacio suficiente para DESCARGAR---");
+        return BLOQUE_OPERATIVO;
+    }
+    if(!hayAtracosDeMuelles(&jor->lMuelles) && colaVacia(&jor->cBuques))
+    {
+        puts("---!No hay buques en los ni por llegar---");
+        return BLOQUE_OPERATIVO;
+    }
+    return TODO_OK;
+}
+
+void printHistoria(const void* a)
+{
+    const tHistoriaComando* hist = (const tHistoriaComando*)a;
+    puts("");
+    printf("Nombre:%4s\tOrigen:%5s\tDestino:%5s\tContenedor:%5s\n",hist->codComando,hist->origen,hist->destino,hist->contenedor);
+    printf("Tiempo Inicio:%d\tTiempo Final:%d\n",hist->tiempoInicio,hist->tiempoFinal);
+    puts("");
 }

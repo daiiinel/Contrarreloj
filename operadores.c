@@ -1,5 +1,30 @@
 #include "operadores.h"
 
+int actualizarOperador(tEstadisticasOperadores* datosOperador, tArbol*abb)
+{
+    FILE* pf=fopen(OPERADORES_ARCH, "r+b");
+
+    if(!pf)
+    {
+        if(!(pf=fopen(OPERADORES_ARCH, "w+b")))
+            return ERROR_ARCH;
+    }
+
+    tOperadorIdx opIdx;
+
+    opIdx.id= datosOperador->id;
+    strcpy(opIdx.nombre, datosOperador->nomOperador);
+
+    buscarElemArbol(abb, &opIdx, sizeof(tOperadorIdx), cmpOperadorIdx);
+
+    fseek(pf, opIdx.pos, SEEK_SET);
+
+    fwrite(datosOperador, sizeof(tEstadisticasOperadores),1,pf);
+
+    fclose(pf);
+    return TODO_OK;
+}
+
 /*
 Flujo operadores.c:
 gestionarOperador rcibe el nombre del operador, lo busca en el abb previamente cargado
@@ -106,7 +131,7 @@ int seleccionaOperador(tEstadisticasOperadores* datosOperador, tRepetidos* encon
     if(opcion==encontrados->cant+1)
         return NO_EXISTE;
 
-    operadorElegido= (tOperadorIdx*)tListaBuscarPorPos(&(encontrados->lNombres), opcion);
+    operadorElegido= (tOperadorIdx*)tListaBuscarPorPos(&(encontrados->lNombres), opcion-1);
 
     if(!operadorElegido)
         return NO_EXISTE;
@@ -139,7 +164,7 @@ int crearOperador(const char* nomOperador, tArbol* abb, FILE* pfOperadores, tEst
 
     datosOperador->id = nuevoId;
     strcpy(datosOperador->nomOperador, nomOperador);
-    datosOperador->cantMov = datosOperador->puntuacion = 0;
+    datosOperador->puntuacion = 0;
 
     strcpy(nueIdx.nombre, nomOperador);
     nueIdx.id = nuevoId;
@@ -219,12 +244,12 @@ long cantidadRegistros(const char* nomArch, unsigned tam)
     long bytes;
 
     if(!pf)
-        return ERROR_ARCHIVO;
+        return ERROR_ARCH;
 
     if(fseek(pf, 0, SEEK_END) != 0)
     {
         fclose(pf);
-        return ERROR_ARCHIVO;
+        return ERROR_ARCH;
     }
 
     bytes= ftell(pf);
@@ -232,7 +257,7 @@ long cantidadRegistros(const char* nomArch, unsigned tam)
     fclose(pf);
 
     if(bytes<0 || bytes%tam!=0)
-        return ERROR_ARCHIVO;
+        return ERROR_ARCH;
 
     return bytes/tam;
 }
@@ -279,7 +304,7 @@ int inicializarIndiceOperadores(tArbol* pa)
     long cantDatos = cantidadRegistros(OPERADORES_ARCH, sizeof(tEstadisticasOperadores));
     long cantIdx = cantidadRegistros(IDX_OPERADORES_ARCH, sizeof(tOperadorIdx));
 
-    if(cantDatos==ERROR_ARCHIVO)//no se contó ningun dato pq no existia el arch¿¿
+    if(cantDatos==ERROR_ARCH)//no se contó ningun dato pq no existia el arch¿¿
     {
         FILE* pf = fopen(OPERADORES_ARCH, "wb");
 
@@ -312,7 +337,7 @@ int cmpOperadorIdx(const void* a, const void* b)
     if (cmp != 0)
         return cmp;
 
-    return (op1->pos > op2->pos) - (op1->pos < op2->pos);
+    return (op1->id > op2->id) - (op1->id < op2->id);
 }
 
 int cmpOperadorNombre(const void* a, const void* b)
@@ -321,4 +346,82 @@ int cmpOperadorNombre(const void* a, const void* b)
     const tOperadorIdx* op2 = b;
 
     return strcmpi(op1->nombre, op2->nombre);
+}
+
+
+
+/**RANKING*/
+//accion para arbol
+void accionGuardarIdx(void* infoNodo, unsigned tamNodo, unsigned nivel, void* params)
+{
+    tLista* pListaIdx = (tLista*)params;
+    tListaInsertarAlFinal(pListaIdx, infoNodo, tamNodo);
+}
+
+int cmpPorPuntaje(const void* a, const void* b)
+{
+    const tEstadisticasOperadores* opA = (const tEstadisticasOperadores*)a;
+    const tEstadisticasOperadores* opB = (const tEstadisticasOperadores*)b;
+
+    //orden descente por puntaje, y sino, ascente por nombre y/o id
+    int compPunt= opB->puntuacion - opA->puntuacion;
+
+    if(compPunt!=0)
+        return compPunt;
+
+    int compNomb= strcmpi(opA->nomOperador, opB->nomOperador);
+
+    if(compNomb!=0)
+        return compNomb;
+
+    return opA->id - opB->id;
+}
+
+int verRanking(tArbol* arbolIdx)
+{
+    int pos=1;
+    tOperadorIdx idxTemp;
+    tEstadisticasOperadores operadorTmp;
+
+
+    tLista lIdx, listaRanking;
+    tListaCrear(&lIdx);
+    tListaCrear(&listaRanking);
+
+    recorridoInorden(arbolIdx, 0, &lIdx, accionGuardarIdx);
+
+    FILE* pfOperadores = fopen(OPERADORES_ARCH, "rb");
+    if(!pfOperadores)
+    {
+        tListaVaciar(&lIdx);
+        return ERROR_ARCH;
+    }
+
+    //proceso de lIdx-> sacar primero, leer archivo, e insertar ordenado en listaRanking
+    while(!tListaVacia(&lIdx))
+    {
+        tListaSacarInicio(&lIdx, &idxTemp, sizeof(tOperadorIdx));
+
+        fseek(pfOperadores, idxTemp.pos, SEEK_SET);
+        fread(&operadorTmp, sizeof(tEstadisticasOperadores), 1, pfOperadores);
+
+        tListaInsertarOrdSinDupli(&listaRanking, &operadorTmp, sizeof(tEstadisticasOperadores), cmpPorPuntaje);
+    }
+
+    fclose(pfOperadores);
+
+    printf("\n----------- RANKING DE OPERADORES ------------\n");
+    printf("\nPUESTO\tNOMBRE \t\tID \tPUNTUACION\n");
+
+    while(!tListaVacia(&listaRanking))
+    {
+        tListaSacarInicio(&listaRanking, &operadorTmp, sizeof(tEstadisticasOperadores));
+
+        printf(" [%d] \t%-13s | %-5u | %d\n", pos, operadorTmp.nomOperador, operadorTmp.id, operadorTmp.puntuacion);
+
+        pos++;
+    }
+    printf("---------------------------------------------------\n");
+
+    return TODO_OK;
 }

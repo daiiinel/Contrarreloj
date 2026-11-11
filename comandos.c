@@ -68,6 +68,12 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
     }
     *act = '\0';
 
+    if(*linea == '\0')
+    {
+        puts("Ingresa algo pliss no seas malo/a");
+        return ERROR_INGRESO_COMANDO;
+    }
+
     //Didido la cadena en subcadenas con strtok y las guardo en "palabras"
     act = strtok(linea," ");
     while(act != NULL && cant <= TAM_ARG)
@@ -417,7 +423,7 @@ int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
 void copiarCadenaAMayus(char* destino,char* origen)
 {
     aMayusCadena(origen);
-    strncpy(destino,origen,sizeof(TAM_ARG));
+    strncpy(destino,origen,sizeof(TAM_ARGUMENTO));
     *(destino + TAM_ARG-1) = '\0';
 }
 

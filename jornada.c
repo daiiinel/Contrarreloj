@@ -184,7 +184,7 @@ int desarrolloJornada(tJornada* jor, tParametros *param)
 
 
         procesarArrivos(jor);
-        tListaMostrar(&historial,printHistoria);
+        //tListaMostrar(&historial,printHistoria);
         system("pause");
         system("cls");
     }
@@ -705,35 +705,41 @@ int buscarContenedorEspEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor
     return pos;
 }
 
-int buscarEnPila(tPila *pp,void *info, unsigned tam,Cmp cmp)
+int buscarEnPila(tPila *pp, void *info, unsigned tam, Cmp cmp)
 {
     tPila auxPila;
-    int pos = -1,i=0;
-    void *elem = malloc(tam);
-    if (!elem)
-        return pos;
+    int pos = NO_EXISTE, i = 0;
+    void *elem;
 
+    if(!pp || !info || !cmp || tam == 0)
+        return NO_EXISTE;
+
+    elem = malloc(tam);
+    if(!elem)
+    {
+        return SIN_MEM;
+    }
     crearPila(&auxPila);
 
-    /* vacía la pila original contando antes y después del buscado */
-    while (!pilaVacia(pp) && pos == -1)
+    while(!pilaVacia(pp) && pos == NO_EXISTE)
     {
         desapilar(pp, elem, tam);
-        apilar(&auxPila, elem, tam);
 
-        if(cmp(elem, info) == 0)
+        if(apilar(&auxPila, elem, tam))
+        {
+            apilar(pp, elem, tam);
+            pos = SIN_MEM;
+        }
+        else if(cmp(elem, info) == 0)
         {
             pos = i;
-            memcpy(info,elem,tam);
+            memcpy(info, elem, tam);
         }
         else
-        {
             i++;
-        }
     }
-
-    /* restaura la pila original */
-    while (!pilaVacia(&auxPila))
+    ///restaurar la pila original
+    while(!pilaVacia(&auxPila))
     {
         desapilar(&auxPila, elem, tam);
         apilar(pp, elem, tam);
@@ -748,7 +754,7 @@ int cmpContenedor(const void* a,const void* b)
     const tContenedor* contenedor1 = (const tContenedor*)a;
     const tContenedor* contenedor2 = (const tContenedor*)b;
 
-    return strcmp(contenedor1->id,contenedor2->id);
+    return strncmp(contenedor1->id,contenedor2->id,sizeof(contenedor1->id));
 }
 
 int bloqueoPorENT(tJornada* jor,int capZonas)
@@ -759,6 +765,7 @@ int bloqueoPorENT(tJornada* jor,int capZonas)
     int encima;
     if(colaVacia(&jor->cCamiones) && colaVacia(&jor->camionesEnTiempo))
     {
+        puts("---!No hay camiones esperando y no hay futuras llegadas---");
         return BLOQUE_OPERATIVO;
     }
     if(!colaVacia(&jor->camionesEnTiempo))
@@ -767,13 +774,16 @@ int bloqueoPorENT(tJornada* jor,int capZonas)
         strcpy(conte.id,camion.pedido);
         if(buscarContenedorEspEnZonas(&jor->lZonas,&zona,&conte) < 0)
         {
-            return TODO_OK;
+            puts("---!No existe el contenedor en las zonas---");
+            return BLOQUE_OPERATIVO;
         }
         else
         {
             encima = buscarEnPila(&zona.contenedores,&conte,TAM_CONTENEDOR,cmpContenedor);
+            tListaInsertarOrdConDupli(&jor->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
             if(capZonas < encima)
             {
+                puts("---!No hay espacio suficiente para a reubicar hasta al tope---");
                 return BLOQUE_OPERATIVO;
             }
             return TODO_OK;
@@ -786,10 +796,12 @@ int bloqueoPorDES(tJornada* jor,int capZonas)
 {
     if(capZonas == 0)
     {
+        puts("---!No hay espacio suficiente para DESCARGAR---");
         return BLOQUE_OPERATIVO;
     }
     if(!hayAtracosDeMuelles(&jor->lMuelles) && colaVacia(&jor->cBuques))
     {
+        puts("---!No hay buques en los ni por llegar---");
         return BLOQUE_OPERATIVO;
     }
     return TODO_OK;

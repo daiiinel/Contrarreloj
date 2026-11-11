@@ -12,8 +12,8 @@ typedef enum
 
 #define TAM_OPERACION    4
 #define TAM_COMANDO      4
-#define TAM_ARGUMENTO    5
-#define TAM_ARG          5
+#define TAM_ARGUMENTO    9
+#define TAM_ARG          9
 #define CANT_ARG_COM     1
 #define CANT_ARG_OP      3
 #define TIEMPO_ESP       1

@@ -475,31 +475,6 @@ int archivoFinJornada(tJornada *jor)
     return TODO_OK;
 }
 
-/// PARA EL HISTORIAL DE LOS OPERADORES TXT
-/*
-int archivoOperadores(tJornada *jor)
-{
-    FILE *pf=fopen(OPERADORES_ARCH,"r+t");
-    if(!pf)
-    {
-        pf=fopen(OPERADORES_ARCH, "w+t");
-        if(!pf)
-            return ERROR_ARCH;
-        //si entro aca es porque tuvo que crear el archivo entonces no habia nada antes
-        fprintf(pf,"\t---------Historial de Operadores---------\n");
-        fprintf(pf, "%-15s %-10s %-20s %s\n","OPERADOR", "PUNTAJE","CANT. MOVIMIENTOS");
-    }
-    else
-        fseek(pf,0,SEEK_END);
-
-    fprintf(pf,"%-15s %-10u %-20d %d/%d\n",jor->operador, jor->puntaje,jor->puntaje,jor->tiempo, jor->tiempo_maximo);
-    fclose(pf);
-
-    return TODO_OK;
-}
-*/
-
-
 int bajarPuertoTxt(tJornada*jor)
 {
     FILE* pPuerto= fopen(PUERTO_ARCH, "rt");

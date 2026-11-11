@@ -39,6 +39,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="TDA/Vector.h" />
+		<Unit filename="TDA/abb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TDA/abb.h" />
 		<Unit filename="TDA/colaDinamica.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -64,6 +68,10 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="operadores.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="operadores.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

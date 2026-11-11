@@ -1,5 +1,6 @@
 #include "colaDinamica.h"
 
+
 void crearCola(tCola* pc)
 {
     pc->pri=NULL;
@@ -9,9 +10,9 @@ void crearCola(tCola* pc)
 int colaLlena(tCola* pc, unsigned cantBytes)
 {
     tNodo* aux=(tNodo*)malloc(sizeof(tNodo));
-    void* info=malloc(cantBytes);
+    void *info=malloc(cantBytes);
     free(aux);
-    free(aux->info);
+    free(info);
     return((aux==NULL || info==NULL)?SIN_MEM:TODO_OK);
 }
 
@@ -39,7 +40,7 @@ int ponerEnCola(tCola* pc, void* dato, unsigned tamDato)
 int verPrimeroEnCola(tCola* pc, void* dato, unsigned tamDato)
 {
     if(pc->pri==NULL)
-        return COLA_VACIA;
+        return VACIO;
 
     memcpy(dato,pc->pri->info, MIN(tamDato,pc->pri->tam));
     return TODO_OK;
@@ -47,14 +48,14 @@ int verPrimeroEnCola(tCola* pc, void* dato, unsigned tamDato)
 
 int colaVacia(const tCola* pc)
 {
-    return (pc->pri==NULL?COLA_VACIA:-1);
+    return pc->pri==NULL;
 }
 
 int sacarDeCola(tCola* pc, void* dato, unsigned tamDato)
 {
     tNodo *aux=pc->pri;
     if(pc->pri==NULL)
-        return COLA_VACIA;
+        return VACIO;
 
     pc->pri=aux->sig;
     memcpy(dato,aux->info,MIN(aux->tam,tamDato));

@@ -1,36 +1,20 @@
+#include "constantes.h"
 #include "jornada.h"
-/*
-PREGUNTAS PROFE:
--- a la hora de generar el puerto, sigue siendo simulable el caso en el que
-se indique que la cantidad de contenedores sea mayor a la cantidad de camiones?
-de ser asi, a cada camion se le asigna un solo contenedor y los contenedores sobrantes quedan almacenados
-de no ser asi, ..
-
-
-de la cola de camiones hay que mostrar los 2 primeros? pedro
-si si,en que momento se muestran los dos primeros?
-
-tiene que haber una cola de antedidos? los primeros 3?
-una cola de
-esta cola queda intacta 1 2 3 4 5
-
-en la funcion
-verNPrimeros(tCola *pc, unsigned n) una copia de la cola
-    creo una colaCopia que sea lo mismo que viene de pc de todos los nodos
-
-    while(ver los n primeros)
-        desacolar
-        mostrar
-
-    4 5 si me quedan cosas, las tiro vaciarCola
-
-*/
 
 int main()
 {
-    int opc;
+    int opc,c;
     char nombreOperador[MAX_NOMBRE_OP];
     tJornada jornada;
+    tEstadisticasOperadores datosOperador;
+    tParametros param;
+
+    tArbol arbolIdx;
+
+    crearArbol(&arbolIdx);
+
+    if(inicializarIndiceOperadores(&arbolIdx)!=TODO_OK)
+        return ERROR_ARCH;
 
     srand(time(NULL));
 
@@ -39,26 +23,38 @@ int main()
         puts(MENU_INICIO);
         scanf("%d", &opc);
 
+        while((c=getchar()) != '\n' && c != EOF);
         switch(opc)
         {
             case 1:
                     printf("Ingrese su nombre: ");
-                    fflush(stdin);
-                    gets(nombreOperador);
+                    do
+                    {
+                        if(fgets(nombreOperador, MAX_NOMBRE_OP+1, stdin) == NULL)
+                            return 1;
 
-                    if(nuevaJornada(nombreOperador, &jornada)==NO_SIMULABLE)
+                    }while(nombreOperador[0] == '\n');
+                    nombreOperador[strcspn(nombreOperador, "\n")] = '\0';
+
+                    if(gestionarOperador(nombreOperador, &arbolIdx, &datosOperador)!=TODO_OK)
+                    {
+                        puts(MSG_ERROR_OPERADOR);
+                        system("pause");
+                        break;
+                    }
+
+                    if(nuevaJornada(&datosOperador, &jornada, &param)==NO_SIMULABLE)
                     {
                         puts(MSG_NO_SIMULABLE);
                         break;
                     }
+                    desarrolloJornada(&jornada, &param, &datosOperador);
 
-
-                    //tengo que bajar lo del minuto 0 ? yo o dai
-                    //pregunto por el movimiento se lo pido al pibe
+                    actualizarOperador(&datosOperador, &arbolIdx);
 
                 break;
             case 2:
-                //verRanking(); //--prox en operadores.h (persistencia de datos)
+                verRanking(&arbolIdx);
                 break;
             case 3:
                 break;
@@ -68,9 +64,12 @@ int main()
                 break;
         }
 
+
+         system("pause");
         system("cls");
 
     }while(opc!=3);
 
+    vaciarArbol(&arbolIdx);
     return 0;
 }

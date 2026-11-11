@@ -9,4 +9,12 @@ typedef struct sNodo
     struct sNodo* sig;
 }tNodo;
 
+typedef struct sNodoA
+{
+    void* info;
+    unsigned tam;
+    struct sNodoA*izq, *der;
+}tNodoA;
+
+
 #endif // NODO_H_INCLUDED

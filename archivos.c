@@ -1,15 +1,7 @@
 #include "archivos.h"
 
-#define ID_CONT    100 //identificador predeterminado para los contenedores [C101, C102, etc]
+#define ID_CONT    100
 
-///lee config.txt y generar puerto.txt -listo
-///validar que sea "simulable" - listo
-///determinar buques, zonas, camiones, tiempo - list
-
-
-///MEJORABLE/OPTIMIZABLE - version q funciona¿
-///optimizable-> asegurar q hayan mas casos en los que los seteos no sean tan chicos (check?¿)
-//ej: 1contxbuq, 1 buque, 1 camion -> 100% valido y simulable pero muy facil¿¿
 int validaConfigYGeneraPuerto(tParametros * param)
 {
     FILE* pConf= fopen(CONF_ARCH, "rt");
@@ -20,6 +12,12 @@ int validaConfigYGeneraPuerto(tParametros * param)
     cargarParametros(param, pConf);
 
     //casos insimulabless
+    if(param->minJornada <= 0 || param->cantMuelle <= 0 || param->cantZona <= 0 ||
+       param->capPila <= 0 || param->maxBuques <= 0 || param->maxContPorBuques <= 0 ||
+       param->maxCamiones <= 0 || param->tiempoDescargaCont <= 0 ||
+       param->tiempoReubicacion <= 0 || param->tiempoCargaCamion <= 0)
+        return NO_SIMULABLE;
+
     if(param->maxCamiones > param->maxBuques * param->maxContPorBuques)
         return NO_SIMULABLE;
 
@@ -63,7 +61,6 @@ int generarPuertoTxT(tParametros* param)
     contXBuq = randAlterado(param->maxContPorBuques);
     cantContenedores = cantBuques * contXBuq;
 
-    //nunca pedir mas camiones q contenedores disponibles
     cantCamiones = MIN(param->maxCamiones, cantContenedores);
 
     //al tiempo total, le restamos el ultimo intervalo de tiempo posible para una accion

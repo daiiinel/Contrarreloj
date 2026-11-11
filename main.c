@@ -41,7 +41,6 @@ int main()
     tEstadisticasOperadores datosOperador;
     tParametros param;
 
-
     tArbol arbolIdx; //para la persistencia de datos
 
     crearArbol(&arbolIdx);
@@ -61,8 +60,14 @@ int main()
         {
             case 1:
                     printf("Ingrese su nombre: ");
-                    fflush(stdin);
-                    gets(nombreOperador);
+                    //fflush(stdin);
+                    do
+                    {
+                        if(fgets(nombreOperador, MAX_NOMBRE_OP+1, stdin) == NULL)
+                            return 1;
+
+                    }while(nombreOperador[0] == '\n');
+                    nombreOperador[strcspn(nombreOperador, "\n")] = '\0';
 
                     if(gestionarOperador(nombreOperador, &arbolIdx, &datosOperador)!=TODO_OK)
                     {
@@ -76,10 +81,13 @@ int main()
                         puts(MSG_NO_SIMULABLE);
                         break;
                     }
-                    desarrolloJornada(&jornada, &param);
+                    desarrolloJornada(&jornada, &param, &datosOperador);
+
+                    actualizarOperador(&datosOperador, &arbolIdx);
+
                 break;
             case 2:
-                //verRanking(); //--prox en operadores.h (persistencia de datos)
+                verRanking(&arbolIdx);
                 break;
             case 3:
                 break;
@@ -91,6 +99,7 @@ int main()
 //        verBinIdx(IDX_OPERADORES_ARCH);
 //        verBinOp(OPERADORES_ARCH);
 
+         system("pause");
         system("cls");
 
     }while(opc!=3);
@@ -124,7 +133,7 @@ void verBinOp(const char*nArch)
     tEstadisticasOperadores reg;
 
     while(fread(&reg, sizeof(tEstadisticasOperadores),1,pf ))
-        printf("%u - %s - %u - %u \n", reg.id, reg.nomOperador, reg.cantMov, reg.puntuacion);
+        printf("%u - %s - %u \n", reg.id, reg.nomOperador, reg.puntuacion);
 
     fclose(pf);
 }

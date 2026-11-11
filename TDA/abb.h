@@ -26,6 +26,7 @@ int insertarArbolIte(tArbol*pa, const void* elem, unsigned tam, Cmp);
 
 
 void vaciarArbol(tArbol* pa);
+int arbolVacio(const tArbol *pa);
 
 int buscarElemArbol(const tArbol*p, void *d, unsigned tam, Cmp cmp);
 

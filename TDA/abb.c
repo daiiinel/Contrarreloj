@@ -119,6 +119,10 @@ void vaciarArbol(tArbol*pa)
     free(*pa);
     *pa=NULL;
 }
+int arbolVacio(const tArbol *pa)
+{
+    return *pa == NULL;
+}
 
 
 int buscarElemArbol(const tArbol*pa, void *d, unsigned tam, Cmp cmp)

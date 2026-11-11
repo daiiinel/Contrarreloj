@@ -70,8 +70,8 @@ typedef struct
 {
     unsigned numJornada;
     char nomOperador[MAX_NOMBRE_OP];
-    unsigned puntuacionObtenida,
-             movimientosRealizados, cantMov;
+    int puntuacionObtenida;
+    unsigned movimientosRealizados;
 }tEstadisticaJornada;
 
 typedef struct
@@ -93,7 +93,7 @@ int nuevaJornada(tEstadisticasOperadores*datosOperador, tJornada *jor, tParametr
 int bajarPuertoTxt(tJornada*jor);
 
 //Jornada
-int desarrolloJornada(tJornada* jor, tParametros *param);
+int desarrolloJornada(tJornada* jor, tParametros *param, tEstadisticasOperadores* datosOperador);
 void verKPrimeros(tCola* camionesEspera);
 int estadoDeJornada(tJornada *jor, tLista coman);
 void procesarEnMedio(tJornada* jor, int tiempoUso);
@@ -125,7 +125,7 @@ void mostrarUnaZona(void *datoZona, void *extra);
 //Fin Jornada
 int mostrarResultadoJornada(tJornada *jor, int razon);
 // Historial de jornada puede que no este terminado si hay que aregar algo
-int archivoFinJornada(tJornada *jor);
+int archivoFinJornada(tJornada *jor, unsigned idOperador);
 int archivoOperadores(tJornada *jor);
 
 

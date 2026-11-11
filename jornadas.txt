@@ -1,0 +1,6 @@
+	---------Historial de Jornadas---------
+OPERADOR        PUNTAJE    CANT. MOVIMIENTOS    TIEMPO FINAL/DISPONIBLE
+fwefwaefwa      0          0                    15/30
+ede             0          0                    6/30
+vfvf            0          0                    6/30
+fewfwe          0          0                    8/30

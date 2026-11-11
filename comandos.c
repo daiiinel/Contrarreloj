@@ -3,7 +3,7 @@
 void copiarCadenaAMayus(char* destino,char* origen);
 void aMayusCadena(char* cadena);
 
-int cargarListaComandos(tLista* pList,tParametros* param)
+int cargarVectorComandos(tLista* pList,tParametros* param)
 {
     int codRet=0,cantComandos,i=0;
     tComando listComandos[] =
@@ -11,8 +11,8 @@ int cargarListaComandos(tLista* pList,tParametros* param)
         {DES,CANT_ARG_OP,param->tiempoDescargaCont,procesarComandoDES},
         {REU,CANT_ARG_OP,param->tiempoReubicacion,procesarComandoREU},
         {ENT,CANT_ARG_COM,param->tiempoCargaCamion,procesarComandoENT},
-        {ESP,CANT_ARG_COM,TIEMPO_ESP,NULL},
-        {VER,CANT_ARG_COM,TIEMPO_VER,NULL}
+        {ESP,CANT_ARG_COM,TIEMPO_ESP,procesarComandoESP},
+        {VER,CANT_ARG_COM,0,procesarComandoVER}
 
     };
     cantComandos = sizeof(listComandos)/sizeof(tComando);
@@ -35,6 +35,7 @@ int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos,tLista* historia
     char* argumentos[TAM_ARG];
     tComando comando;
 
+
     //El usuario ingresa un comando
     if(leerComandoOperacion(linea,argumentos,&comando,comandos))
     {
@@ -42,11 +43,10 @@ int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos,tLista* historia
     }
     //utilizo el puntero a funcion de la estructura
     //Esta funcion se encarga de validar y ejecutar el comando
-    if(comando.procesarComando(argumentos,jornada,&comando,historial))
-    {
-        return ERROR_COMANDO;
-    }
+    comando.procesarComando(argumentos,jornada,&comando,historial);
 
+
+    //Guardar historia
     return TODO_OK;
 }
 
@@ -79,6 +79,7 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
 
     //Valido si existe la opracion
     copiarCadenaAMayus(comando->nomComando,*palabras);
+    ///Recordar:Agregar una funcion que copie sin pasarse del tamanio de liinea
     if(tListaBuscarElemOrd(comandos,comando,sizeof(tComando),cmpComando) < 0)
     {
         puts("No existe el comando ingresado");
@@ -86,7 +87,7 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
     }
 
     //Valido cantidad de argumentos
-    if(cant - comando->cantArg != 1)
+    if(cant != comando->cantArg)
     {
         printf("Error en la cantidad de argumentos");
         return ERROR_INGRESO_COMANDO;
@@ -116,8 +117,9 @@ int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* com
     //Si hay un evento en el medio antes de que termine la operacion
     //en este momento se actualiza
 
-    operacionDES(&muelle,&zona,&conte);
+    operacionDES(&muelle,&zona, &conte, jornada);
     guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
+
     //actualizo puntos
     zona.cantContenedores++;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
@@ -147,15 +149,18 @@ int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada)
         return ERROR_COMANDO;
     }
     //Valido que hay espacio
-    else if(zona->capacidad == 0)
+    else if(zona->capacidad == zona->cantContenedores)
     {
         puts("Zona sin espacio");
         return ERROR_COMANDO;
     }else
+    {
         return TODO_OK;
+    }
+
 }
 
-int operacionDES(tMuelle* muelle,tZona* zona,tContenedor* conte)
+int operacionDES(tMuelle* muelle,tZona* zona,  tContenedor* cont, tJornada* jor)
 {
     tBuque* buqueAux;
     tPila* pilaConteBuque;
@@ -164,13 +169,14 @@ int operacionDES(tMuelle* muelle,tZona* zona,tContenedor* conte)
     pilaConteBuque = tBuqueVerPila(buqueAux);
     pilaConteZona = tZonaVerPila(zona);
 
-    desapilar(pilaConteBuque,conte->id,sizeof(tContenedor));
+    desapilar(pilaConteBuque,cont,sizeof(tContenedor));
     if(pilaVacia(pilaConteBuque))
-    {
-        muelle->estado = false;
-        muelle->buque = NULL;
-    }
-    apilar(pilaConteZona,conte->id,sizeof(tContenedor));
+        liberarMuelle(jor, muelle);
+
+    apilar(pilaConteZona,cont->id,sizeof(tContenedor));
+
+
+
     return TODO_OK;
 }
 
@@ -252,8 +258,8 @@ int operacionREU(tZona* pZona1,tZona* pZona2,tContenedor* conte)
 int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando,tLista* historial)
 {
     tZona zona;
-    tContenedor conte;
     tCamiones camion;
+    tContenedor conte;
     if(validarTiempo(jornada,comando->tiempoUso))
     {
         puts("Tiempo insuficiente");
@@ -264,7 +270,6 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
     {
         return ERROR_ARCH;
     }
-
     operacionENT(&zona,&camion,&conte,&jornada->camionesEnTiempo);
     guardarComando(argv[nomArg],zona.nom,camion.num,conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
     zona.cantContenedores--;
@@ -283,7 +288,7 @@ int validarENT(tLista* lZonas,tCola* cCamionesEsp,tZona* zona)
         return ERROR_ARCH;
     }
     strcpy(contenedor.id,camion.pedido);
-    if(buscarContenedorEnTopeZonas(lZonas,zona,&contenedor) == NO_EXISTE)
+    if(buscarContenedorEnZonas(lZonas,zona,&contenedor) == NO_EXISTE)
     {
         puts("El contenedor no esta en el tope de alguna zona");
         return ERROR_ARCH;
@@ -297,10 +302,27 @@ int operacionENT(tZona* pZona,tCamiones* camion,tContenedor* conte,tCola* pCamio
     pPila = tZonaVerPila(pZona);
 
     desapilar(pPila,conte,sizeof(tContenedor));
-    sacarDeCola(pCamiones,camion,sizeof(tContenedor));
-
+    sacarDeCola(pCamiones,camion,sizeof(tCamiones));
     return TODO_OK;
 }
+
+int procesarComandoVER(char* argv[],tJornada* pJornada,const struct tComando* comando,tLista* historial)
+{
+    printf("Tiempo: %d / %d \t Puntuacion(de momento): %d", pJornada->tiempo, pJornada->tiempo_maximo, pJornada->puntaje);
+    verKPrimeros(&(pJornada->camionesEnTiempo));
+    mostrarColaBuqesEspera(&(pJornada->buquesEnTiempo));
+    mostrarTodasLasPilasDeZonas(&(pJornada->lZonas));
+    return TODO_OK;
+}
+int procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando,tLista* historial)
+{
+    pJornada->tiempo++;
+    guardarComando(argv[nomArg],"","","",pJornada->tiempo-comando->tiempoUso,pJornada->tiempo,historial);
+
+    return TODO_OK;
+    //avanceAutomatico(pJornada);
+}
+
 
 int cmpZona(const void* a,const void* b)
 {
@@ -331,6 +353,7 @@ void actualizarZona(void* actualizado,const void* actualizador)
     const tZona* zona2 = (const tZona*)actualizador;
 
     zona1->cantContenedores = zona2->cantContenedores;
+    zona1->contenedores = zona2->contenedores;
 }
 
 void actualizarMuelle(void* actualizado,const void* actualizador)
@@ -344,10 +367,23 @@ void actualizarMuelle(void* actualizado,const void* actualizador)
 int validarTiempo(const tJornada* jornada,const int tiempoAgregado)
 {
     int nueTiempo = tiempoAgregado + jornada->tiempo;
-    return jornada->tiempo_maximo <= nueTiempo;
+    return jornada->tiempo_maximo < nueTiempo;
 }
 
-int buscarContenedorEnTopeZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
+void guardarComando(const char* nom,char*orig,char*dest,char*conte,int ini,int fin,tLista* historial)
+{
+    tHistoriaComando hist;
+    strcpy(hist.codComando,nom);
+    strcpy(hist.origen,orig);
+    strcpy(hist.destino,dest);
+    strcpy(hist.contenedor,conte);
+    hist.tiempoInicio = ini;
+    hist.tiempoFinal = fin;
+
+    tListaInsertarAlFinal(historial,&hist,sizeof(tHistoriaComando));
+}
+
+int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor)
 {
     int pos = -1, i=0;
     tPila* pPila;
@@ -376,19 +412,6 @@ int buscarContenedorEnTopeZonas(tLista* zonas,tZona* zona,tContenedor* contenedo
         }
     }
     return pos;
-}
-
-void guardarComando(const char* nom,char*orig,char*dest,char*conte,int ini,int fin,tLista* historial)
-{
-    tHistoriaComando hist;
-    strcpy(hist.codComando,nom);
-    strcpy(hist.origen,orig);
-    strcpy(hist.destino,dest);
-    strcpy(hist.contenedor,conte);
-    hist.tiempoInicio = ini;
-    hist.tiempoFinal = fin;
-
-    tListaInsertarAlFinal(historial,&hist,sizeof(tHistoriaComando));
 }
 
 void copiarCadenaAMayus(char* destino,char* origen)

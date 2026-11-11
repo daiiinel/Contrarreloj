@@ -27,18 +27,24 @@
                             "\t Error al procesar Operador \n"\
                             "\t Reintente nuevamente\n"
 
+#define MSG_FIN_JORNADA     "\n ------ FIN DE JORNADA ------\n"\
+                            " Tiempo utilizado: %d / %d \t Puntaje obtenido: %d\n"\
+                            ""
+
 //salidas
 
-#define SIN_MEM             -1
+#define SIN_MEM             -2
 #define TODO_OK             0
 #define ERROR_COMANDO       1
 #define ERROR_ARCH          2
 #define NO_SIMULABLE        3
-#define NO_EXISTE           5
+#define NO_EXISTE           -1
 #define FIN_JORNADA         4
 #define DUPLICADO           5
 #define VACIO               6
-
+#define BLOQUE_OPERATIVO    9
+#define SIN_TIEMPO          10
+#define SIGUE               11
 
 //cadenas
 #define MAX_NOMBRE_OP       50
@@ -55,6 +61,7 @@
 #define TAM_CAMION sizeof(tCamiones)
 #define TAM_ZONA sizeof(tZona)
 #define TAM_MUELLE sizeof(tMuelle)
+#define TAM_CONTENEDOR sizeof(tContenedor)
 
 //nombres de archivos
 #define PUERTO_ARCH             "puerto.txt"

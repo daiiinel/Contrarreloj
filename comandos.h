@@ -17,7 +17,6 @@ typedef enum
 #define CANT_ARG_COM     1
 #define CANT_ARG_OP      3
 #define TIEMPO_ESP       1
-#define TIEMPO_VER       0
 
 #define ERROR_INGRESO_COMANDO -1
 #define CODIGO_OP "OPERADOR>"
@@ -47,30 +46,26 @@ typedef struct
     int tiempoFinal;
 }tHistoriaComando;
 
-
 int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos,tLista* historial);
 
-int cargarListaComandos(tLista* pList,tParametros* param);
+int cargarVectorComandos(tLista* pList,tParametros* param);
 int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* comandos);
 
 int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando,tLista* historial);
 int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando,tLista* historial);
 int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando,tLista* historial);
+int procesarComandoVER(char* argv[],tJornada* pJornada,const struct tComando* comando,tLista* historial);
+int procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando,tLista* historial);
 
 
 int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada);
 int validarREU(tZona* zona1,tZona* zona2,tJornada* jornada);
 int validarENT(tLista* lZonas,tCola* cCamionesEsp,tZona* zona);
 
-int operacionDES(tMuelle* muelle,tZona* zona,tContenedor* conte);
+int operacionDES(tMuelle* muelle,tZona* zona, tContenedor *cont, tJornada* jornada);
 int operacionREU(tZona* pZona1,tZona* pZona2,tContenedor* conte);
 int operacionENT(tZona* pZona,tCamiones* camion,tContenedor* conte,tCola* pCamiones);
 void comandoESP(tJornada* pJornada);
-void comandoVER(tLista* pZona,tLista* pMuelle,tCola* pCamion,tParametros* pParametros,tJornada* pJornada);
-
-
-
-
 
 int cmpZona(const void* a,const void* b);
 int cmpMuelle(const void* a,const void* b);
@@ -80,7 +75,7 @@ void actualizarZona(void* actualizado,const void* actualizador);
 void actualizarMuelle(void* actualizado,const void* actualizador);
 
 int validarTiempo(const tJornada* jornada,const int tiempoAgregado);
-int buscarContenedorEnTopeZonas(tLista* zonas,tZona* zona,tContenedor* contenedor);
+int buscarContenedorEnZonas(tLista* zonas,tZona* zona,tContenedor* contenedor);
 void guardarComando(const char* nom,char*orig,char*dest,char*conte,int ini,int fin,tLista* historial);
 
 

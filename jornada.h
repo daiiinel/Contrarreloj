@@ -16,8 +16,6 @@ typedef struct jornada
     tPila contenedores;
 }tBuque;
 
-tPila* tBuqueVerPila(tBuque* pBuque);
-
 typedef struct
 {
     char nom[MAX_NOMBRE_MUELLE];
@@ -33,10 +31,6 @@ typedef struct
     bool atendido; // 0 no atendido ;   1 atendido
 }tCamiones;
 
-
-tBuque* tMuelleVerBuque(tMuelle* muelle);
-
-
 typedef struct
 {
     char nom[MAX_NOMBRE_ZONA];
@@ -44,11 +38,6 @@ typedef struct
     unsigned cantContenedores;
     tPila contenedores;
 }tZona;
-
-tPila* tZonaVerPila(tZona* pZona);
-
-// bajo los camiones yo, de puerto.txt que dai trae generado
-// hago una cola de camiones
 
 typedef struct
 {
@@ -69,6 +58,8 @@ typedef struct
     int tiempo;
     int tiempo_maximo;
     int puntaje;
+    int cantBuquesDescargados;
+    int contenedoresEntregados;
     tLista lMuelles;
     tCola cBuques;
     tCola cCamiones;
@@ -113,9 +104,11 @@ void mostrarUnaZona(void *datoZona, void *extra);
 
 //Fin Jornada
 int mostrarResultadoJornada(tJornada *jor, int razon);
-// Historial de jornada puede que no este terminado si hay que aregar algo
 int archivoFinJornada(tJornada *jor);
 int archivoOperadores(tJornada *jor);
 
+tPila* tZonaVerPila(tZona* pZona);
+tBuque* tMuelleVerBuque(tMuelle* muelle);
+tPila* tBuqueVerPila(tBuque* pBuque);
 
 #endif // JORNADA_H_INCLUDED

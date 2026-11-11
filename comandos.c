@@ -46,8 +46,6 @@ int ejecutarComandoOperacion(tJornada* jornada,tLista* comandos)
     //Esta funcion se encarga de validar y ejecutar el comando
     comando.procesarComando(argumentos,jornada,&comando);
 
-
-
     //Guardar historia
     return TODO_OK;
 }
@@ -275,6 +273,7 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
     zona.cantContenedores--;
     jornada->tiempo+=comando->tiempoUso;
     jornada->puntaje+=PUNTAJE_ENTRGA;
+    jornada->contenedoresEntregados++;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
 
     return TODO_OK;

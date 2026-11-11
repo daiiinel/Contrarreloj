@@ -205,6 +205,7 @@ int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* com
     
     zona1.cantContenedores--;
     zona2.cantContenedores++;
+    jornada->tiempo+=comando->tiempoUso;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona1,sizeof(tZona),cmpZona,actualizarZona);
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona2,sizeof(tZona),cmpMuelle,actualizarZona);
     return TODO_OK;
@@ -273,6 +274,7 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
     operacionENT(&zona,&jornada->camionesEnTiempo);
     zona.cantContenedores--;
     jornada->tiempo+=comando->tiempoUso;
+    jornada->puntaje+=PUNTAJE_ENTRGA;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
 
     return TODO_OK;
@@ -307,17 +309,19 @@ int operacionENT(tZona* pZona,tCola* pCamiones)
     return TODO_OK;
 }
 
-void procesarComandoVER(char* argv[],tJornada *pJornada,const struct tComando* comando)
+int procesarComandoVER(char* argv[],tJornada *pJornada,const struct tComando* comando)
 {
     printf("Tiempo: %d / %d \t Puntuacion(de momento): %d", pJornada->tiempo, pJornada->tiempo_maximo, pJornada->puntaje);
     verKPrimeros(&(pJornada->camionesEnTiempo));
     mostrarColaBuqesEspera(&(pJornada->buquesEnTiempo));
     mostrarTodasLasPilasDeZonas(&(pJornada->lZonas));
+    return TODO_OK;
 }
-void procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando)
+int procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando)
 {
     pJornada->tiempo++;
     avanceAutomatico(pJornada);
+    return TODO_OK;
 }
 
 

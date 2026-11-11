@@ -87,9 +87,10 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
     ///Zonas
     tListaCrear(&lZonas);
     i=1;// lo vuelvo a setear
-    while(i < param->cantZona)
+    while(i <= param->cantZona)
     {
         sprintf(auxZona.nom, "Z%d", i);
+
         auxZona.capacidad=param->capPila;
         auxZona.cantContenedores=0;
         crearPila(&(auxZona.contenedores));
@@ -121,26 +122,25 @@ int nuevaJornada(tEstadisticasOperadores* datosOperador, tJornada* jor, tParamet
 
 int desarrolloJornada(tJornada* jor, tParametros *param)
 {
-    int estado, pena;
+    int estado, pena=0;
     tLista comandos;
     tCamiones cam;
 
     cargarVectorComandos(&comandos, param);
     // arrivo los que llegan en el momento 0;
 
-    procesarArrivos(jor);
     system("cls");
 
     printf("---------Inicio de una nueva jornada---------\n");
 
     while((estado=estadoDeJornada(jor, comandos))==SIGUE)
     {
+        procesarArrivos(jor);
         printf("Tiempo: %d\n", jor->tiempo);
         verPrimeros(jor);
         ejecutarComandoOperacion(jor, &comandos);
 
 
-        procesarArrivos(jor);
         system("pause");
         system("cls");
     }
@@ -150,7 +150,7 @@ int desarrolloJornada(tJornada* jor, tParametros *param)
         pena=contarPuntajeNegativo(&(jor->camionesEnTiempo));
         jor->puntaje-=(pena*PUNTAJE_PENALIZADOR);
     }
-    printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje);
+    printf(MSG_FIN_JORNADA, jor->tiempo, jor->tiempo_maximo, jor->puntaje, pena);
     system("pause");
    // paso al hstorial del operador, lo hace dai por el arbol
    archivoFinJornada(jor);
@@ -232,8 +232,6 @@ void avanceAutomatico(tJornada *jor)
         jor->tiempo+= (jor->tiempo_maximo - jor->tiempo);
 }
 
-
-
 int procesarArrivos(tJornada *jor)
 {
     tCamiones auxCamion;
@@ -241,7 +239,10 @@ int procesarArrivos(tJornada *jor)
 
     verPrimeroEnCola(&(jor->cBuques),&auxBuque,TAM_BUQUE);
     verPrimeroEnCola(&(jor->cCamiones),&auxCamion,TAM_CAMION);
-
+    arrivoBuques(jor);
+    acercarBuques(jor);
+    arrivoCamiones(jor);
+/*
     if(jor->tiempo==0)
     {
 
@@ -267,6 +268,7 @@ int procesarArrivos(tJornada *jor)
         acercarBuques(jor);
 
     }
+*/
     return TODO_OK;
 }
 
@@ -286,7 +288,7 @@ int arrivoCamiones(tJornada *jor)
 {
     tCamiones atender;
     verPrimeroEnCola(&(jor->cCamiones), &atender, TAM_CAMION);
-    while(atender.tiempoLlegada <= (jor->tiempo) && !(colaVacia(&(jor->cCamiones))))
+    while(!(colaVacia(&(jor->cCamiones)))&& atender.tiempoLlegada <= (jor->tiempo) )
     {
         if(sacarDeCola(&(jor->cCamiones), &atender, TAM_CAMION)==TODO_OK)
             ponerEnCola(&(jor->camionesEnTiempo), &atender,TAM_CAMION);
@@ -299,29 +301,26 @@ int arrivoBuques(tJornada *jor)
 {
     tBuque atender;
     verPrimeroEnCola(&(jor->cBuques), &atender, TAM_BUQUE);
-
     while(atender.tiempoLlegada <= (jor->tiempo) && !(colaVacia(&(jor->cBuques))))
     {
         if(sacarDeCola(&(jor->cBuques), &atender, TAM_BUQUE)==TODO_OK)
-        {
             ponerEnCola(&(jor->buquesEnTiempo), &atender,TAM_BUQUE);
-            acercarBuques(jor);
-        }
-            verPrimeroEnCola(&(jor->cBuques), &atender, TAM_BUQUE);
+
+        verPrimeroEnCola(&(jor->cBuques), &atender, TAM_BUQUE);
     }
     acercarBuques(jor);
-
     return TODO_OK;
 }
 
 int acercarBuques(tJornada* jor)
 {
     tMuelle auxMuelle;
-    tBuque *auxBuque= (tBuque*)malloc(TAM_BUQUE);
+    tBuque *auxBuque;
     bool refe=0;
 
     while(!colaVacia(&(jor->buquesEnTiempo)))
     {
+        auxBuque=(tBuque*)malloc(TAM_BUQUE);
         if(tListaEncontrar(&(jor->lMuelles),&auxMuelle, &refe,TAM_MUELLE,cmpMuelleLibre)==1)
         {
             sacarDeCola(&(jor->buquesEnTiempo),auxBuque, TAM_BUQUE);
@@ -538,8 +537,6 @@ int archivoOperadores(tJornada *jor)
     return TODO_OK;
 }
 */
-
-
 
 
 int bajarPuertoTxt(tJornada*jor)

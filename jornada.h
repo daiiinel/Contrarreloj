@@ -32,7 +32,6 @@ typedef struct
     char pedido[MAX_NOMBRE_ZONA];// una estructura de contenedor??
     bool atendido; // 0 no atendido ;   1 atendido
 }tCamiones;
-//los camiones vienen en cola
 
 
 tBuque* tMuelleVerBuque(tMuelle* muelle);
@@ -56,16 +55,6 @@ typedef struct
     char id[MAX_NOMBRE_CONT];
 }tContenedor;
 
-
-//Para la "gestion de datos"?
-//Uno para el archivo de operadores y el otro para el archivo de jornadas
-//typedef struct
-//{
-//    char nomOperador[MAX_NOMBRE_OP];
-//    unsigned cantMov,
-//             puntuacion;
-//
-//}tEstadisticasOperadores;
 typedef struct
 {
     unsigned numJornada;

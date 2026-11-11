@@ -53,8 +53,8 @@ int leerComandoOperacion(char* linea,char** palabras,tComando* comando,tLista* c
 int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* comando);
 int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* comando);
 int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* comando);
-void procesarComandoVER(char* argv[],tJornada* pJornada,const struct tComando* comando);
-void procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando);
+int procesarComandoVER(char* argv[],tJornada* pJornada,const struct tComando* comando);
+int procesarComandoESP(char* argv[],tJornada *pJornada,const struct tComando* comando);
 
 
 int validarDES(tMuelle* muelle,tZona* zona,tJornada* jornada);

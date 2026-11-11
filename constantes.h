@@ -28,8 +28,8 @@
                             "\t Reintente nuevamente\n"
 
 #define MSG_FIN_JORNADA     "\n ------ FIN DE JORNADA ------\n"\
-                            " Tiempo utilizado: %d / %d \t Puntaje obtenido: %d\n"\
-                            ""
+                            "\t Tiempo utilizado: %d / %d \t Puntaje obtenido: %d\n"\
+                            "\t Camiones pendientes de atender: %d\n"\
 
 //salidas
 
@@ -77,6 +77,7 @@
 //Puntajes
 #define PUNTAJE_DESEMBARCO  5
 #define PUNTAJE_PENALIZADOR 2
+#define PUNTAJE_ENTRGA      10
 
 //Punteros a funcion
 typedef int(*Cmp)(const void* a,const void* b);

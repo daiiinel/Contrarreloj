@@ -30,7 +30,7 @@
 #define MSG_FIN_JORNADA     "\n ------ FIN DE JORNADA ------\n"\
                             "\t Tiempo utilizado: %d / %d \t Puntaje obtenido: %d\n"\
                             "\t Camiones pendientes de atender: %d\n"\
-                            "\t Contenedores atendidos: %d -> %d \n"\
+                            "\t Camiones atendidos: %d -> %d \n"\
                             "\t Buques descargados: %d -> %d \n"
 
 //salidas

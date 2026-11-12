@@ -115,13 +115,13 @@ int procesarComandoDES(char* argv[],tJornada* jornada,const struct tComando* com
     procesarEnMedio(jornada, comando->tiempoUso);
 
     operacionDES(&muelle,&zona, &conte, jornada);
-    guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
 
     //actualizo puntos
     zona.cantContenedores++;
     jornada->tiempo+=comando->tiempoUso;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
 
+    guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
     return TODO_OK;
 }
 
@@ -190,7 +190,6 @@ int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* com
     procesarEnMedio(jornada, comando->tiempoUso);
 
     operacionREU(&zona1,&zona2,&conte);
-    guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
 
 
     zona1.cantContenedores--;
@@ -198,6 +197,8 @@ int procesarComandoREU(char* argv[],tJornada* jornada,const struct tComando* com
     jornada->tiempo+=comando->tiempoUso;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona1,sizeof(tZona),cmpZona,actualizarZona);
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona2,sizeof(tZona),cmpMuelle,actualizarZona);
+
+    guardarComando(comando->nomComando,argv[arg1],argv[arg2],conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
     return TODO_OK;
 }
 
@@ -260,13 +261,13 @@ int procesarComandoENT(char* argv[],tJornada* jornada,const struct tComando* com
 
     procesarEnMedio(jornada, comando->tiempoUso);
     operacionENT(&zona,&camion,&conte,&jornada->camionesEnTiempo);
-    guardarComando(argv[nomArg],zona.nom,camion.num,conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
     zona.cantContenedores--;
     jornada->tiempo+=comando->tiempoUso;
     jornada->puntaje+=PUNTAJE_ENTRGA;
     jornada->contenedoresEntregados++;
     tListaInsertarOrdConDupli(&jornada->lZonas,&zona,sizeof(tZona),cmpZona,actualizarZona);
 
+    guardarComando(argv[nomArg],zona.nom,camion.num,conte.id,jornada->tiempo-comando->tiempoUso,jornada->tiempo,historial);
     return TODO_OK;
 }
 

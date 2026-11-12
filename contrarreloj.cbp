@@ -35,10 +35,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="TDA/ListaDinamica.h" />
-		<Unit filename="TDA/Vector.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="TDA/Vector.h" />
 		<Unit filename="TDA/abb.c">
 			<Option compilerVar="CC" />
 		</Unit>
